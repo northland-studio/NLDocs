@@ -19,3 +19,4 @@ export { default as FolderIcon } from './FolderIcon.vue';
 export { default as FileIcon } from './FileIcon.vue';
 export { default as PlusIcon } from './PlusIcon.vue';
 export { default as RefreshIcon } from './RefreshIcon.vue';
+export { default as MenuIcon } from './MenuIcon.vue';

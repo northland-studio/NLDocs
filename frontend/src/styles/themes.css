@@ -1,0 +1,21 @@
+/* 白天主题（默认） */
+:root {
+  --bg-primary: #ffffff;
+  --bg-secondary: #f5f5f5;
+  --text-primary: #1A1B1D;
+  --text-secondary: #666666;
+  --accent: #004AAD;
+  --accent-light: #004AAD20;
+  --border: #e0e0e0;
+}
+
+/* 暗色主题 */
+[data-theme="dark"] {
+  --bg-primary: #1A1B1D;
+  --bg-secondary: #2D2E30;
+  --text-primary: #ffffff;
+  --text-secondary: #aaaaaa;
+  --accent: #004AAD;
+  --accent-light: #004AAD40;
+  --border: #3D3E40;
+}

@@ -5,6 +5,7 @@ const express = require('express');
 const cors = require('cors');
 
 const authRoutes = require('./routes/auth');
+const documentRoutes = require('./routes/documents');
 const approvalRoutes = require('./routes/approvals');
 const announcementRoutes = require('./routes/announcements');
 const uploadRoutes = require('./routes/upload');
@@ -29,6 +30,7 @@ app.get('/health', (req, res) => {
 
 // 注册路由
 app.use('/api/auth', authRoutes);
+app.use('/api/documents', documentRoutes);
 app.use('/api/approvals', approvalRoutes);
 app.use('/api/upload', uploadRoutes);
 app.use('/api/announcements', announcementRoutes);

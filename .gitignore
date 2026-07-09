@@ -17,11 +17,14 @@ build/
 .env.production.local
 
 # Database and uploads
-data/
 *.db
 *.sqlite
 *.sqlite3
-uploads/
+# Ignore all data content but keep uploads directory structure
+data/*
+!data/uploads/
+data/uploads/*
+!data/uploads/.gitkeep
 
 # Logs
 logs/

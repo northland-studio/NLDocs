@@ -1,6 +1,5 @@
 <script setup>
 import { provide, ref } from 'vue'
-import Layout from './components/Layout.vue'
 
 // 提供主题切换功能
 const theme = ref(localStorage.getItem('theme') || 'light')
@@ -19,9 +18,7 @@ provide('toggleTheme', toggleTheme)
 </script>
 
 <template>
-  <Layout>
-    <router-view />
-  </Layout>
+  <router-view />
 </template>
 
 <style scoped>

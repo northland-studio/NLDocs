@@ -1,81 +1,119 @@
-const sqlite3 = require('sqlite3').verbose();
+const initSqlJs = require('sql.js');
 const path = require('path');
+const fs = require('fs');
 
-const dbPath = process.env.DB_PATH || path.join(__dirname, 'nldocs.db');
+const dbPath = process.env.DB_PATH || path.join(__dirname, 'data', 'nldocs.db');
 
-const db = new sqlite3.Database(dbPath, (err) => {
-  if (err) {
-    console.error('数据库连接失败:', err.message);
+// 确保data目录存在
+const dataDir = path.dirname(dbPath);
+if (!fs.existsSync(dataDir)) {
+  fs.mkdirSync(dataDir, { recursive: true });
+}
+
+let db;
+let SQL;
+
+// 初始化数据库
+const initDatabase = async () => {
+  SQL = await initSqlJs();
+  
+  // 如果数据库文件存在，加载它
+  if (fs.existsSync(dbPath)) {
+    const fileBuffer = fs.readFileSync(dbPath);
+    db = new SQL.Database(fileBuffer);
   } else {
-    console.log('已连接到 SQLite 数据库:', dbPath);
+    db = new SQL.Database();
   }
-});
-
-const query = (sql, params = []) => {
-  return new Promise((resolve, reject) => {
-    db.all(sql, params, (err, rows) => {
-      if (err) {
-        reject(err);
-      } else {
-        resolve(rows);
-      }
-    });
-  });
+  
+  console.log('已连接到 SQLite 数据库:', dbPath);
+  return db;
 };
 
-const get = (sql, params = []) => {
-  return new Promise((resolve, reject) => {
-    db.get(sql, params, (err, row) => {
-      if (err) {
-        reject(err);
-      } else {
-        resolve(row);
-      }
-    });
-  });
+// 保存数据库到文件
+const saveDatabase = () => {
+  if (db) {
+    const data = db.export();
+    const buffer = Buffer.from(data);
+    fs.writeFileSync(dbPath, buffer);
+  }
 };
 
-const run = (sql, params = []) => {
-  return new Promise((resolve, reject) => {
-    db.run(sql, params, function(err) {
-      if (err) {
-        reject(err);
-      } else {
-        resolve({ id: this.lastID, changes: this.changes });
-      }
-    });
-  });
+// 封装为Promise风格，保持API兼容性
+const query = async (sql, params = []) => {
+  if (!db) await initDatabase();
+  try {
+    const stmt = db.prepare(sql);
+    if (params.length > 0) {
+      stmt.bind(params);
+    }
+    const results = [];
+    while (stmt.step()) {
+      const row = stmt.getAsObject();
+      results.push(row);
+    }
+    stmt.free();
+    return results;
+  } catch (err) {
+    throw err;
+  }
 };
 
-const exec = (sql) => {
-  return new Promise((resolve, reject) => {
-    db.exec(sql, (err) => {
-      if (err) {
-        reject(err);
-      } else {
-        resolve();
-      }
-    });
-  });
+const get = async (sql, params = []) => {
+  if (!db) await initDatabase();
+  try {
+    const stmt = db.prepare(sql);
+    if (params.length > 0) {
+      stmt.bind(params);
+    }
+    let result = null;
+    if (stmt.step()) {
+      result = stmt.getAsObject();
+    }
+    stmt.free();
+    return result;
+  } catch (err) {
+    throw err;
+  }
 };
 
-const close = () => {
-  return new Promise((resolve, reject) => {
-    db.close((err) => {
-      if (err) {
-        reject(err);
-      } else {
-        resolve();
-      }
-    });
-  });
+const run = async (sql, params = []) => {
+  if (!db) await initDatabase();
+  try {
+    db.run(sql, params);
+    saveDatabase();
+    // sql.js不直接返回lastInsertRowId，需要查询
+    const result = await get('SELECT last_insert_rowid() as id');
+    return { id: result?.id || 0, changes: db.getRowsModified() };
+  } catch (err) {
+    throw err;
+  }
 };
 
+const exec = async (sql) => {
+  if (!db) await initDatabase();
+  try {
+    db.run(sql);
+    saveDatabase();
+    return;
+  } catch (err) {
+    throw err;
+  }
+};
+
+const close = async () => {
+  if (db) {
+    saveDatabase();
+    db.close();
+  }
+};
+
+// 导出初始化函数和数据库方法
 module.exports = {
-  db,
+  initDatabase,
   query,
   get,
   run,
   exec,
-  close
+  close,
+  getDb: () => db
 };

@@ -5,6 +5,10 @@ const express = require('express');
 const cors = require('cors');
 
 const authRoutes = require('./routes/auth');
+const approvalRoutes = require('./routes/approvals');
+const announcementRoutes = require('./routes/announcements');
+const uploadRoutes = require('./routes/upload');
+const notificationRoutes = require('./routes/notifications');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -25,6 +29,10 @@ app.get('/health', (req, res) => {
 
 // 注册路由
 app.use('/api/auth', authRoutes);
+app.use('/api/approvals', approvalRoutes);
+app.use('/api/upload', uploadRoutes);
+app.use('/api/announcements', announcementRoutes);
+app.use('/api/notifications', notificationRoutes);
 
 // 404处理
 app.use((req, res) => {

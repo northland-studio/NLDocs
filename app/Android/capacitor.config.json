@@ -1,7 +1,7 @@
 {
   "appId": "top.northland.nldocs",
   "appName": "北域文档",
-  "webDir": "../../frontend/dist",
+  "webDir": "./frontend/dist",
   "server": {
     "androidScheme": "https"
   },

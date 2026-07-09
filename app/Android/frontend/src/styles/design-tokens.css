@@ -1,0 +1,135 @@
+/* ============================================================
+   Apple Design Token System
+   Based on DESIGN.md — Apple Design System specification
+   ============================================================ */
+
+/* ------------------------------------------------------------
+   Light Theme (default :root)
+   ------------------------------------------------------------ */
+:root {
+  /* --- Colors: Backgrounds --- */
+  --color-bg-primary: #f5f5f7;      /* Page background */
+  --color-bg-secondary: #ffffff;    /* Card background */
+  --color-bg-tertiary: #e8e8ed;     /* Hover background */
+  --color-bg-hero: #000000;         /* Hero section background */
+
+  /* --- Colors: Text --- */
+  --color-text-primary: #1d1d1f;
+  --color-text-secondary: rgba(0, 0, 0, 0.8);
+  --color-text-tertiary: rgba(0, 0, 0, 0.48);
+
+  /* --- Colors: Accent (Apple Blue — the only chromatic accent) --- */
+  --color-accent: #0071e3;
+  --color-accent-hover: #0077ed;
+
+  /* --- Colors: Links --- */
+  --color-link: #0066cc;            /* Link on light background */
+  --color-link-dark-bg: #2997ff;    /* Link on dark background */
+
+  /* --- Colors: Status --- */
+  --color-error: #ef4444;
+  --color-success: #10b981;
+  --color-warning: #f59e0b;
+  --color-info: #3b82f6;
+
+  /* --- Colors: Surfaces & Overlays --- */
+  --color-surface-dark-1: #272729;
+  --color-border: rgba(0, 0, 0, 0.1);
+  --color-overlay: rgba(210, 210, 215, 0.64);
+
+  /* --- Typography: Font Families --- */
+  --font-display: 'SF Pro Display', 'SF Pro Icons', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  --font-text: 'SF Pro Text', 'SF Pro Icons', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+
+  /* --- Border Radius --- */
+  --radius-micro: 5px;
+  --radius-standard: 8px;
+  --radius-comfortable: 11px;
+  --radius-large: 12px;
+  --radius-pill: 980px;
+  --radius-circle: 50%;
+
+  /* --- Shadows --- */
+  --shadow-card: rgba(0, 0, 0, 0.22) 3px 5px 30px 0px;
+  --shadow-none: none;
+
+  /* --- Spacing (base 8px; scale per DESIGN.md) --- */
+  --space-1: 2px;
+  --space-4: 4px;
+  --space-5: 5px;
+  --space-6: 6px;
+  --space-7: 7px;
+  --space-8: 8px;
+  --space-9: 9px;
+  --space-10: 10px;
+  --space-11: 11px;
+  --space-14: 14px;
+  --space-15: 15px;
+  --space-17: 17px;
+  --space-20: 20px;
+  --space-24: 24px;
+
+  /* --- Navigation --- */
+  --nav-bg: rgba(0, 0, 0, 0.8);
+  --nav-blur: saturate(180%) blur(20px);
+  --nav-height: 48px;
+}
+
+/* ------------------------------------------------------------
+   Dark Theme [data-theme="dark"]
+   Only the variables that change are redefined; the rest
+   inherit from :root above.
+   ------------------------------------------------------------ */
+[data-theme="dark"] {
+  /* --- Colors: Backgrounds --- */
+  --color-bg-primary: #000000;
+  --color-bg-secondary: #1c1c1e;
+  --color-bg-tertiary: #2c2c2e;
+  --color-bg-hero: #000000;
+
+  /* --- Colors: Text --- */
+  --color-text-primary: #ffffff;
+  --color-text-secondary: #98989d;
+  --color-text-tertiary: #636366;
+
+  /* --- Colors: Accent --- */
+  --color-accent: #0a84ff;
+
+  /* --- Colors: Links --- */
+  --color-link: #2997ff;            /* Link on dark background */
+
+  /* --- Colors: Surfaces & Borders --- */
+  --color-border: rgba(255, 255, 255, 0.1);
+  --color-surface-dark-1: #2c2c2e;
+
+  /* The remaining tokens (accent-hover, link-dark-bg, status colors,
+     fonts, radii, shadows, spacing, nav) are unchanged from :root. */
+}
+
+/* ------------------------------------------------------------
+   Backward-compatibility mappings
+   Maps legacy variable names (previously defined in themes.css)
+   to the new design-token names so existing components keep
+   working without immediate refactoring. These reference the
+   new tokens via var(), so they automatically follow theme
+   switches (light/dark).
+   ------------------------------------------------------------ */
+:root {
+  --bg-primary: var(--color-bg-secondary);
+  --bg-secondary: var(--color-bg-tertiary);
+  --bg-hover: var(--color-bg-tertiary);
+  --text-primary: var(--color-text-primary);
+  --text-secondary: var(--color-text-secondary);
+  --text-tertiary: var(--color-text-tertiary);
+  --accent: var(--color-accent);
+  --accent-hover: var(--color-accent-hover);
+  --accent-light: color-mix(in srgb, var(--color-accent) 10%, transparent);
+  --border: var(--color-border);
+  --border-color: var(--color-border);
+  --error: var(--color-error);
+  --success: var(--color-success);
+  --warning: var(--color-warning);
+  --info: var(--color-info);
+  --primary-color: var(--color-accent);
+  --color-error: #ef4444;
+}

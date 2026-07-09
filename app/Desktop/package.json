@@ -6,7 +6,7 @@
   "scripts": {
     "start": "electron .",
     "dev": "electron . --dev",
-    "build:web": "cd ../../frontend && npm run build",
+    "build:web": "cd frontend && npm install && npm run build",
     "build:win": "npm run build:web && electron-builder --win",
     "build:mac": "npm run build:web && electron-builder --mac",
     "build:linux": "npm run build:web && electron-builder --linux",
@@ -20,7 +20,7 @@
     },
     "files": [
       "src/**/*",
-      "../../frontend/dist/**/*"
+      "frontend/dist/**/*"
     ],
     "win": {
       "target": ["nsis"],

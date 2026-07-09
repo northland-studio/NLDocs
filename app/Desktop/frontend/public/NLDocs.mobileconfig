@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>PayloadContent</key>
+    <array>
+        <dict>
+            <key>PayloadType</key>
+            <string>com.apple.webClip.managed</string>
+            <key>PayloadVersion</key>
+            <integer>1</integer>
+            <key>PayloadIdentifier</key>
+            <string>top.beiyu.nldocs.webclip</string>
+            <key>PayloadUUID</key>
+            <string>A1B2C3D4-E5F6-4A5B-9C8D-7E8F90123456</string>
+            <key>PayloadDisplayName</key>
+            <string>北域文档 NLDocs</string>
+            <key>PayloadDescription</key>
+            <string>北域工作室团队文档管理系统 Web Clip</string>
+            <key>URL</key>
+            <string>https://doc.xuanjian.top</string>
+            <key>Label</key>
+            <string>NLDocs</string>
+            <key>IsRemovable</key>
+            <true/>
+            <key>FullScreen</key>
+            <true/>
+        </dict>
+    </array>
+    <key>PayloadDisplayName</key>
+    <string>北域文档 NLDocs</string>
+    <key>PayloadDescription</key>
+    <string>北域工作室团队文档管理系统安装配置</string>
+    <key>PayloadIdentifier</key>
+    <string>top.beiyu.nldocs</string>
+    <key>PayloadOrganization</key>
+    <string>北域工作室 Northland Studio</string>
+    <key>PayloadType</key>
+    <string>Configuration</string>
+    <key>PayloadUUID</key>
+    <string>09F87654-3210-4A5B-BC7D-EF1234567890</string>
+    <key>PayloadVersion</key>
+    <integer>1</integer>
+</dict>
+</plist>

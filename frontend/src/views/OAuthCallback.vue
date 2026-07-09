@@ -20,9 +20,16 @@ onMounted(async () => {
   const state = new URLSearchParams(window.location.search).get('state');
   const savedState = localStorage.getItem('oauth_state');
   
-  // 验证state防止CSRF
+  // 严格验证state防止CSRF
+  if (!savedState) {
+    error.value = '请从登录页面发起授权请求';
+    loading.value = false;
+    return;
+  }
+  
   if (state !== savedState) {
-    error.value = '授权验证失败';
+    error.value = '授权验证失败，请重新登录';
+    localStorage.removeItem('oauth_state');
     loading.value = false;
     return;
   }
@@ -32,9 +39,10 @@ onMounted(async () => {
     const response = await axios.post('/api/auth/callback', { code });
     localStorage.setItem('token', response.data.token);
     localStorage.setItem('user', JSON.stringify(response.data.user));
+    localStorage.removeItem('oauth_state');
     router.push('/');
   } catch (e) {
-    error.value = '登录失败：' + (e.response?.data?.message || '未知错误');
+    error.value = '登录失败：' + (e.response?.data?.message || e.message || '未知错误');
     loading.value = false;
   }
 });

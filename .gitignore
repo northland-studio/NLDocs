@@ -53,3 +53,5 @@ coverage/
 tmp/
 temp/
 .cache/
+
+DESIGN.md

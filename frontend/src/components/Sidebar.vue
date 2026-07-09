@@ -1,36 +1,37 @@
 <template>
   <aside :class="['sidebar', { collapsed }]">
     <div class="logo">
-      <DocumentIcon />
-      <span v-if="!collapsed">NLDocs</span>
+      <img src="@/assets/icon.png" alt="NLDocs" class="logo-img" v-if="!collapsed" />
+      <DocumentIcon v-else />
+      <span v-if="!collapsed" class="logo-text">北域文档</span>
     </div>
     <nav class="nav-menu">
       <router-link to="/" class="nav-item">
         <HomeIcon />
-        <span v-if="!collapsed">首页</span>
+        <span v-if="!collapsed" class="nav-label">首页</span>
       </router-link>
       <router-link to="/documents" class="nav-item">
         <DocumentIcon />
-        <span v-if="!collapsed">文档</span>
+        <span v-if="!collapsed" class="nav-label">文档</span>
       </router-link>
       <router-link to="/announcements" class="nav-item">
         <AnnouncementIcon />
-        <span v-if="!collapsed">公告</span>
+        <span v-if="!collapsed" class="nav-label">公告</span>
       </router-link>
       <router-link to="/approvals" class="nav-item" v-if="user?.level >= 1">
         <ApprovalIcon />
-        <span v-if="!collapsed">审批</span>
+        <span v-if="!collapsed" class="nav-label">审批</span>
       </router-link>
       <router-link to="/notifications" class="nav-item">
         <NotificationIcon />
-        <span v-if="!collapsed">通知</span>
-        <span v-if="unreadCount > 0" class="badge">{{ unreadCount }}</span>
+        <span v-if="!collapsed" class="nav-label">通知</span>
+        <span v-if="unreadCount > 0" class="badge">{{ unreadCount > 99 ? '99+' : unreadCount }}</span>
       </router-link>
     </nav>
     <div class="nav-footer">
       <router-link to="/settings" class="nav-item">
         <SettingsIcon />
-        <span v-if="!collapsed">设置</span>
+        <span v-if="!collapsed" class="nav-label">设置</span>
       </router-link>
     </div>
   </aside>
@@ -62,7 +63,6 @@ const loadUnreadCount = async () => {
 let interval;
 onMounted(() => {
   loadUnreadCount();
-  // 每分钟刷新未读数量
   interval = setInterval(loadUnreadCount, 60000);
 });
 
@@ -74,12 +74,18 @@ onUnmounted(() => {
 <style scoped>
 .sidebar {
   width: 240px;
-  background: var(--bg-primary);
-  border-right: 1px solid var(--border-color);
+  background: var(--nav-bg);
+  backdrop-filter: var(--nav-blur);
+  -webkit-backdrop-filter: var(--nav-blur);
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
   display: flex;
   flex-direction: column;
   transition: width 0.3s ease;
   overflow: hidden;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  z-index: 100;
 }
 
 .sidebar.collapsed {
@@ -90,23 +96,34 @@ onUnmounted(() => {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 20px;
-  border-bottom: 1px solid var(--border-color);
-  font-size: 20px;
-  font-weight: 600;
-  color: var(--text-primary);
+  padding: 14px 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  height: var(--nav-height);
+  box-sizing: border-box;
 }
 
-.logo svg {
+.logo-img {
+  width: 24px;
+  height: 24px;
+  border-radius: var(--radius-standard);
   flex-shrink: 0;
+}
+
+.logo-text {
+  font-family: var(--font-display);
+  font-size: 17px;
+  font-weight: 600;
+  color: #ffffff;
+  letter-spacing: -0.374px;
 }
 
 .nav-menu {
   flex: 1;
-  padding: 12px;
+  padding: 8px;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 2px;
+  overflow-y: auto;
 }
 
 .nav-item {
@@ -114,20 +131,28 @@ onUnmounted(() => {
   align-items: center;
   gap: 12px;
   padding: 12px;
-  color: var(--text-primary);
+  color: #ffffff;
   text-decoration: none;
-  border-radius: 8px;
-  transition: all 0.2s ease;
+  border-radius: var(--radius-standard);
+  transition: background-color 0.15s ease;
   position: relative;
+  font-family: var(--font-text);
+  font-size: 12px;
+  font-weight: 400;
 }
 
 .nav-item:hover {
-  background: var(--bg-hover);
+  background: rgba(255, 255, 255, 0.1);
 }
 
 .nav-item.router-link-active {
-  background: var(--primary-color);
-  color: white;
+  background: var(--color-accent);
+  color: #ffffff;
+}
+
+.nav-label {
+  font-size: 14px;
+  letter-spacing: -0.224px;
 }
 
 .nav-item svg {
@@ -137,17 +162,18 @@ onUnmounted(() => {
 .badge {
   position: absolute;
   right: 8px;
-  background: var(--error-color, #ef4444);
+  background: var(--color-accent);
   color: white;
-  font-size: 12px;
+  font-size: 11px;
+  font-weight: 600;
   padding: 2px 6px;
-  border-radius: 10px;
+  border-radius: var(--radius-pill);
   min-width: 18px;
   text-align: center;
 }
 
 .nav-footer {
-  padding: 12px;
-  border-top: 1px solid var(--border-color);
+  padding: 8px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 </style>

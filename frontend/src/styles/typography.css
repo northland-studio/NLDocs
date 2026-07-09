@@ -1,0 +1,118 @@
+/* ============================================================
+   Apple Typography Utility Classes
+   Based on DESIGN.md — Typography hierarchy table
+   SF Pro Display at 20px+, SF Pro Text below 20px.
+   Negative letter-spacing applied at all sizes.
+   ============================================================ */
+
+/* Display Hero — product launch headlines, maximum impact */
+.t-display-hero {
+  font-family: var(--font-display);
+  font-size: 56px;
+  font-weight: 600;
+  line-height: 1.07;
+  letter-spacing: -0.28px;
+}
+
+/* Section Heading — feature section titles */
+.t-section-heading {
+  font-family: var(--font-display);
+  font-size: 40px;
+  font-weight: 600;
+  line-height: 1.10;
+}
+
+/* Tile Heading — product tile headlines */
+.t-tile-heading {
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-weight: 400;
+  line-height: 1.14;
+  letter-spacing: 0.196px;
+}
+
+/* Card Title — bold card headings */
+.t-card-title {
+  font-family: var(--font-display);
+  font-size: 21px;
+  font-weight: 700;
+  line-height: 1.19;
+  letter-spacing: 0.231px;
+}
+
+/* Sub-heading — regular card headings */
+.t-sub-heading {
+  font-family: var(--font-display);
+  font-size: 21px;
+  font-weight: 400;
+  line-height: 1.19;
+  letter-spacing: 0.231px;
+}
+
+/* Body — standard reading text */
+.t-body {
+  font-family: var(--font-text);
+  font-size: 17px;
+  font-weight: 400;
+  line-height: 1.47;
+  letter-spacing: -0.374px;
+}
+
+/* Body Emphasis — emphasized body text, labels */
+.t-body-emphasis {
+  font-family: var(--font-text);
+  font-size: 17px;
+  font-weight: 600;
+  line-height: 1.24;
+  letter-spacing: -0.374px;
+}
+
+/* Button — standard button text */
+.t-button {
+  font-family: var(--font-text);
+  font-size: 17px;
+  font-weight: 400;
+  line-height: 2.41;
+}
+
+/* Link — body links, "Learn more" */
+.t-link {
+  font-family: var(--font-text);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.43;
+  letter-spacing: -0.224px;
+}
+
+/* Caption — secondary text, descriptions */
+.t-caption {
+  font-family: var(--font-text);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.29;
+  letter-spacing: -0.224px;
+}
+
+/* Micro — fine print, footnotes */
+.t-micro {
+  font-family: var(--font-text);
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.33;
+  letter-spacing: -0.12px;
+}
+
+/* ------------------------------------------------------------
+   Responsive: max-width 834px (Tablet Small breakpoint)
+   Hero and section headlines scale down per DESIGN.md
+   collapsing strategy: 56px -> 40px -> 28px on mobile.
+   ------------------------------------------------------------ */
+@media (max-width: 834px) {
+  .t-display-hero {
+    font-size: 40px;
+  }
+
+  .t-section-heading {
+    font-size: 28px;
+  }
+}

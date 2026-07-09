@@ -1,13 +1,13 @@
 <template>
   <div class="approvals-page">
     <div class="page-header">
-      <h1>审批管理</h1>
-      <button class="btn-primary" @click="showSubmitDialog = true">
+      <h1 class="t-section-heading">审批管理</h1>
+      <BaseButton variant="primary" @click="showSubmitDialog = true">
         提交审批申请
-      </button>
+      </BaseButton>
     </div>
 
-    <!-- 状态筛选 -->
+    <!-- 状态筛选 - Apple pill 风格 -->
     <div class="tabs">
       <button
         :class="['tab', { active: currentStatus === '' }]"
@@ -36,22 +36,24 @@
       </button>
     </div>
 
-    <!-- 搜索栏 -->
+    <!-- 搜索栏 - Apple filter 风格 -->
     <div class="search-bar">
       <input
         type="text"
         placeholder="搜索文档标题..."
         v-model="searchKeyword"
         @input="handleSearch"
+        class="search-input"
       />
     </div>
 
     <!-- 审批列表 -->
     <div class="approval-list" v-if="approvals.length > 0">
-      <div
+      <BaseCard
         v-for="approval in approvals"
         :key="approval.id"
         class="approval-item"
+        elevated
         @click="viewApproval(approval)"
       >
         <div class="approval-header">
@@ -70,34 +72,34 @@
           </span>
         </div>
         <p v-if="approval.comment" class="comment">{{ approval.comment }}</p>
-      </div>
+      </BaseCard>
     </div>
 
     <!-- 空状态 -->
     <div class="empty-state" v-else>
-      <ApprovalIcon />
+      <ApprovalIcon class="empty-icon" />
       <p>暂无审批记录</p>
     </div>
 
     <!-- 分页 -->
     <div class="pagination" v-if="pagination.totalPages > 1">
-      <button
-        class="page-btn"
+      <BaseButton
+        variant="filter"
         :disabled="pagination.page === 1"
         @click="changePage(pagination.page - 1)"
       >
         上一页
-      </button>
+      </BaseButton>
       <span class="page-info">
         {{ pagination.page }} / {{ pagination.totalPages }}
       </span>
-      <button
-        class="page-btn"
+      <BaseButton
+        variant="filter"
         :disabled="pagination.page === pagination.totalPages"
         @click="changePage(pagination.page + 1)"
       >
         下一页
-      </button>
+      </BaseButton>
     </div>
 
     <!-- 审批详情弹窗 -->
@@ -122,6 +124,8 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue';
 import { approvalsApi } from '@/api/approvals';
+import BaseButton from '@/components/BaseButton.vue';
+import BaseCard from '@/components/BaseCard.vue';
 import ApprovalIcon from '@/assets/icons/ApprovalIcon.vue';
 import ApprovalDetailDialog from '@/components/ApprovalDetailDialog.vue';
 import SubmitApprovalDialog from '@/components/SubmitApprovalDialog.vue';
@@ -283,9 +287,9 @@ onMounted(() => {
 
 <style scoped>
 .approvals-page {
-  padding: 20px;
-  max-width: 1200px;
+  max-width: 980px;
   margin: 0 auto;
+  padding: 32px 24px;
 }
 
 .page-header {
@@ -293,108 +297,111 @@ onMounted(() => {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 24px;
+  flex-wrap: wrap;
+  gap: 16px;
 }
 
-h1 {
-  font-size: 24px;
-  color: var(--text-primary);
+.page-header .t-section-heading {
+  color: var(--color-text-primary);
   margin: 0;
 }
 
-.btn-primary {
-  padding: 8px 16px;
-  background: var(--accent);
-  color: var(--btn-primary-text);
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.btn-primary:hover {
-  background: var(--accent-hover);
-}
-
-/* Tabs */
+/* Tabs - Apple pill 风格 */
 .tabs {
   display: flex;
   gap: 8px;
   margin-bottom: 20px;
+  flex-wrap: wrap;
 }
 
 .tab {
   padding: 8px 16px;
-  background: var(--bg-tertiary);
-  color: var(--text-secondary);
-  border: 1px solid var(--border);
-  border-radius: 6px;
+  background: #fafafc;
+  color: var(--color-text-secondary);
+  border: 3px solid rgba(0, 0, 0, 0.04);
+  border-radius: var(--radius-pill);
   cursor: pointer;
-  transition: all 0.2s;
+  font-family: var(--font-text);
+  font-size: 14px;
+  font-weight: 400;
+  letter-spacing: -0.224px;
+  transition: all 0.15s ease;
   position: relative;
 }
 
 .tab:hover {
-  background: var(--bg-hover);
+  color: var(--color-text-primary);
 }
 
 .tab.active {
-  background: var(--accent);
-  color: var(--btn-primary-text);
-  border-color: var(--accent);
+  background: var(--color-accent);
+  color: #ffffff;
+  border-color: transparent;
 }
 
 .badge {
-  position: absolute;
-  top: -4px;
-  right: -4px;
-  background: var(--error);
-  color: white;
-  font-size: 12px;
-  padding: 2px 6px;
-  border-radius: 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 6px;
+  background: var(--color-error);
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 1px 6px;
+  border-radius: var(--radius-pill);
   min-width: 18px;
+  height: 18px;
   text-align: center;
 }
 
-/* Search Bar */
+.tab.active .badge {
+  background: #ffffff;
+  color: var(--color-accent);
+}
+
+/* 搜索栏 - Apple filter 风格 */
 .search-bar {
   margin-bottom: 20px;
 }
 
-.search-bar input {
+.search-input {
   width: 100%;
   max-width: 400px;
-  padding: 10px 14px;
-  background: var(--input-bg);
-  border: 1px solid var(--input-border);
-  border-radius: 6px;
-  color: var(--text-primary);
-  transition: border-color 0.2s;
-}
-
-.search-bar input:focus {
+  padding: 10px 15px;
+  background: #fafafc;
+  border: 3px solid rgba(0, 0, 0, 0.04);
+  border-radius: var(--radius-comfortable);
+  color: var(--color-text-primary);
+  font-family: var(--font-text);
+  font-size: 17px;
+  letter-spacing: -0.374px;
   outline: none;
-  border-color: var(--input-focus-border);
+  transition: border-color 0.15s ease;
 }
 
-/* Approval List */
+.search-input:focus {
+  border-color: var(--color-accent);
+}
+
+.search-input::placeholder {
+  color: var(--color-text-tertiary);
+}
+
+/* 审批列表 */
 .approval-list {
   display: grid;
   gap: 16px;
+  margin-bottom: 32px;
 }
 
 .approval-item {
-  background: var(--card-bg);
-  border: 1px solid var(--card-border);
-  border-radius: 8px;
-  padding: 16px;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
 .approval-item:hover {
-  box-shadow: var(--card-shadow);
-  border-color: var(--accent);
+  transform: translateY(-2px);
 }
 
 .approval-header {
@@ -406,69 +413,90 @@ h1 {
 
 .status-badge {
   padding: 4px 12px;
-  border-radius: 4px;
+  border-radius: var(--radius-pill);
+  font-family: var(--font-text);
   font-size: 12px;
-  font-weight: 500;
+  font-weight: 600;
+  line-height: 1.33;
+  letter-spacing: -0.12px;
 }
 
 .status-badge.pending {
-  background: var(--warning);
-  color: white;
+  background: var(--color-warning);
+  color: #ffffff;
 }
 
 .status-badge.approved {
-  background: var(--success);
-  color: white;
+  background: var(--color-success);
+  color: #ffffff;
 }
 
 .status-badge.rejected {
-  background: var(--error);
-  color: white;
+  background: var(--color-error);
+  color: #ffffff;
 }
 
 .approval-time {
-  color: var(--text-tertiary);
+  color: var(--color-text-tertiary);
+  font-family: var(--font-text);
   font-size: 12px;
+  letter-spacing: -0.12px;
 }
 
 .document-title {
-  font-size: 16px;
-  color: var(--text-primary);
+  font-family: var(--font-display);
+  font-size: 21px;
+  font-weight: 600;
+  line-height: 1.19;
+  letter-spacing: 0.231px;
+  color: var(--color-text-primary);
   margin: 0 0 8px 0;
 }
 
 .approval-meta {
   display: flex;
   gap: 16px;
-  color: var(--text-secondary);
+  color: var(--color-text-secondary);
+  font-family: var(--font-text);
   font-size: 14px;
+  letter-spacing: -0.224px;
+  flex-wrap: wrap;
 }
 
 .comment {
-  color: var(--text-secondary);
+  color: var(--color-text-secondary);
+  font-family: var(--font-text);
   font-size: 14px;
+  line-height: 1.43;
+  letter-spacing: -0.224px;
   margin: 8px 0 0 0;
   padding-top: 8px;
-  border-top: 1px solid var(--border-light);
+  border-top: 1px solid var(--color-border);
 }
 
-/* Empty State */
+/* 空状态 */
 .empty-state {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   padding: 60px 20px;
-  color: var(--text-tertiary);
+  color: var(--color-text-tertiary);
+  font-family: var(--font-text);
 }
 
-.empty-state svg {
+.empty-icon {
   width: 48px;
   height: 48px;
   margin-bottom: 12px;
 }
 
-/* Pagination */
+.empty-state p {
+  font-size: 17px;
+  letter-spacing: -0.374px;
+}
+
+/* 分页 */
 .pagination {
   display: flex;
   justify-content: center;
@@ -477,26 +505,31 @@ h1 {
   margin-top: 24px;
 }
 
-.page-btn {
-  padding: 8px 16px;
-  background: var(--bg-tertiary);
-  color: var(--text-primary);
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.page-btn:hover:not(:disabled) {
-  background: var(--bg-hover);
-}
-
-.page-btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
 .page-info {
-  color: var(--text-secondary);
+  color: var(--color-text-secondary);
+  font-family: var(--font-text);
+  font-size: 14px;
+  letter-spacing: -0.224px;
+}
+
+/* 响应式 */
+@media (max-width: 640px) {
+  .approvals-page {
+    padding: 24px 16px;
+  }
+
+  .tabs {
+    gap: 6px;
+  }
+
+  .tab {
+    padding: 6px 12px;
+    font-size: 13px;
+  }
+
+  .approval-meta {
+    flex-direction: column;
+    gap: 4px;
+  }
 }
 </style>

@@ -2,6 +2,8 @@ const express = require('express');
 const { query, get, run } = require('../database');
 const { authenticate } = require('../middleware/auth');
 
+const logger = require('../utils/logger');
+
 const router = express.Router();
 
 /**
@@ -19,7 +21,7 @@ router.get('/', authenticate, async (req, res) => {
       data: categories
     });
   } catch (error) {
-    console.error('Get categories error:', error);
+    logger.error('Get categories error:', error);
     res.status(500).json({
       success: false,
       message: '获取分类失败'
@@ -64,7 +66,7 @@ router.post('/', authenticate, async (req, res) => {
       data: newCategory
     });
   } catch (error) {
-    console.error('Create category error:', error);
+    logger.error('Create category error:', error);
     res.status(500).json({
       success: false,
       message: '创建分类失败'

@@ -2,6 +2,8 @@ const express = require('express');
 const { query, get, run } = require('../database');
 const { authenticate } = require('../middleware/auth');
 
+const logger = require('../utils/logger');
+
 const router = express.Router();
 
 /**
@@ -76,7 +78,7 @@ router.get('/', authenticate, async (req, res) => {
     });
 
   } catch (error) {
-    console.error('Get notifications error:', error);
+    logger.error('Get notifications error:', error);
     res.status(500).json({
       success: false,
       message: '获取通知列表失败'
@@ -105,7 +107,7 @@ router.get('/unread-count', authenticate, async (req, res) => {
     });
 
   } catch (error) {
-    console.error('Get unread count error:', error);
+    logger.error('Get unread count error:', error);
     res.status(500).json({
       success: false,
       message: '获取未读数量失败'
@@ -147,7 +149,7 @@ router.put('/:id/read', authenticate, async (req, res) => {
     });
 
   } catch (error) {
-    console.error('Mark notification read error:', error);
+    logger.error('Mark notification read error:', error);
     res.status(500).json({
       success: false,
       message: '标记已读失败'
@@ -175,7 +177,7 @@ router.put('/read-all', authenticate, async (req, res) => {
     });
 
   } catch (error) {
-    console.error('Mark all read error:', error);
+    logger.error('Mark all read error:', error);
     res.status(500).json({
       success: false,
       message: '标记全部已读失败'
@@ -217,7 +219,7 @@ router.delete('/:id', authenticate, async (req, res) => {
     });
 
   } catch (error) {
-    console.error('Delete notification error:', error);
+    logger.error('Delete notification error:', error);
     res.status(500).json({
       success: false,
       message: '删除通知失败'
@@ -245,7 +247,7 @@ router.delete('/read', authenticate, async (req, res) => {
     });
 
   } catch (error) {
-    console.error('Delete read notifications error:', error);
+    logger.error('Delete read notifications error:', error);
     res.status(500).json({
       success: false,
       message: '删除已读通知失败'

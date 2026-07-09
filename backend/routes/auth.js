@@ -4,6 +4,8 @@ const jwt = require('jsonwebtoken');
 const { get, run } = require('../database');
 const { authenticate } = require('../middleware/auth');
 
+const logger = require('../utils/logger');
+
 const router = express.Router();
 
 /**
@@ -43,7 +45,7 @@ router.post('/callback', async (req, res) => {
     const { access_token } = tokenResponse.data;
 
     if (!access_token) {
-      console.error('Token exchange failed:', tokenResponse.data);
+      logger.error('Token exchange failed:', tokenResponse.data);
       return res.status(401).json({
         success: false,
         message: '获取访问令牌失败'
@@ -61,7 +63,7 @@ router.post('/callback', async (req, res) => {
 
     // 玄剑官网verify返回 {valid: true, user: {...}}
     if (!verifyData || !verifyData.valid || !verifyData.user) {
-      console.error('User info fetch failed:', verifyResponse.data);
+      logger.error('User info fetch failed:', verifyResponse.data);
       return res.status(401).json({
         success: false,
         message: '获取用户信息失败'
@@ -118,7 +120,7 @@ router.post('/callback', async (req, res) => {
       user = await get('SELECT * FROM users WHERE xuanjian_id = ?', [userInfo.id]);
       
       if (!user) {
-        console.error('Failed to fetch new user after insert, xuanjian_id:', userInfo.id);
+        logger.error('Failed to fetch new user after insert, xuanjian_id:', userInfo.id);
         return res.status(500).json({
           success: false,
           message: '创建用户记录失败'
@@ -159,13 +161,13 @@ router.post('/callback', async (req, res) => {
     });
 
   } catch (error) {
-    console.error('OAuth callback error:', error.message);
-    console.error('Error stack:', error.stack);
+    logger.error('OAuth callback error:', error.message);
+    logger.error('Error stack:', error.stack);
 
     if (error.response) {
       // 玄剑官网API返回错误
-      console.error('OAuth provider error status:', error.response.status);
-      console.error('OAuth provider error data:', JSON.stringify(error.response.data, null, 2));
+      logger.error('OAuth provider error status:', error.response.status);
+      logger.error('OAuth provider error data:', JSON.stringify(error.response.data, null, 2));
       return res.status(error.response.status || 500).json({
         success: false,
         message: `OAuth认证失败: ${error.response.data?.error || error.response.data?.message || '未知错误'}`,
@@ -174,7 +176,7 @@ router.post('/callback', async (req, res) => {
     }
 
     if (error.request) {
-      console.error('No response received for request:', error.config?.url);
+      logger.error('No response received for request:', error.config?.url);
       return res.status(503).json({
         success: false,
         message: 'OAuth服务不可用，请稍后重试'
@@ -220,7 +222,7 @@ router.get('/me', authenticate, async (req, res) => {
     });
 
   } catch (error) {
-    console.error('Get user info error:', error);
+    logger.error('Get user info error:', error);
     res.status(500).json({
       success: false,
       message: '获取用户信息失败'
@@ -246,7 +248,7 @@ router.post('/logout', authenticate, (req, res) => {
     });
 
   } catch (error) {
-    console.error('Logout error:', error);
+    logger.error('Logout error:', error);
     res.status(500).json({
       success: false,
       message: '登出失败'
@@ -295,7 +297,7 @@ router.get('/verify', authenticate, async (req, res) => {
     });
 
   } catch (error) {
-    console.error('Verify token error:', error);
+    logger.error('Verify token error:', error);
     res.status(500).json({
       success: false,
       message: '验证token失败'

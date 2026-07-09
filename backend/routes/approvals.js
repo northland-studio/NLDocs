@@ -2,6 +2,8 @@ const express = require('express');
 const { get, run, query } = require('../database');
 const { authenticate, requireLevel } = require('../middleware/auth');
 
+const logger = require('../utils/logger');
+
 const router = express.Router();
 
 /**
@@ -101,7 +103,7 @@ router.post('/', authenticate, async (req, res) => {
     });
 
   } catch (error) {
-    console.error('提交审批申请错误:', error);
+    logger.error('提交审批申请错误:', error);
     res.status(500).json({
       success: false,
       message: '提交审批申请失败'
@@ -212,7 +214,7 @@ router.get('/', authenticate, async (req, res) => {
     });
 
   } catch (error) {
-    console.error('获取审批列表错误:', error);
+    logger.error('获取审批列表错误:', error);
     res.status(500).json({
       success: false,
       message: '获取审批列表失败'
@@ -280,7 +282,7 @@ router.get('/my', authenticate, async (req, res) => {
     });
 
   } catch (error) {
-    console.error('获取我的审批申请错误:', error);
+    logger.error('获取我的审批申请错误:', error);
     res.status(500).json({
       success: false,
       message: '获取我的审批申请失败'
@@ -331,7 +333,7 @@ router.get('/pending', authenticate, requireLevel(1), async (req, res) => {
     });
 
   } catch (error) {
-    console.error('获取待审核列表错误:', error);
+    logger.error('获取待审核列表错误:', error);
     res.status(500).json({
       success: false,
       message: '获取待审核列表失败'
@@ -425,7 +427,7 @@ router.get('/:id', authenticate, async (req, res) => {
     });
 
   } catch (error) {
-    console.error('获取审批详情错误:', error);
+    logger.error('获取审批详情错误:', error);
     res.status(500).json({
       success: false,
       message: '获取审批详情失败'
@@ -512,7 +514,7 @@ router.put('/:id/approve', authenticate, requireLevel(1), async (req, res) => {
     });
 
   } catch (error) {
-    console.error('审批通过错误:', error);
+    logger.error('审批通过错误:', error);
     res.status(500).json({
       success: false,
       message: '审批通过失败'
@@ -598,7 +600,7 @@ router.put('/:id/reject', authenticate, requireLevel(1), async (req, res) => {
     });
 
   } catch (error) {
-    console.error('审批拒绝错误:', error);
+    logger.error('审批拒绝错误:', error);
     res.status(500).json({
       success: false,
       message: '审批拒绝失败'

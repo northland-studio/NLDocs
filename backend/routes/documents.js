@@ -2,6 +2,8 @@ const express = require('express');
 const { query, get, run } = require('../database');
 const { authenticate, requireLevel } = require('../middleware/auth');
 
+const logger = require('../utils/logger');
+
 const router = express.Router();
 
 /**
@@ -102,7 +104,7 @@ router.get('/', authenticate, async (req, res) => {
     });
 
   } catch (error) {
-    console.error('获取文档列表失败:', error);
+    logger.error('获取文档列表失败:', error);
     res.status(500).json({
       success: false,
       message: '获取文档列表失败'
@@ -175,7 +177,7 @@ router.get('/:id', authenticate, async (req, res) => {
     });
 
   } catch (error) {
-    console.error('获取文档详情失败:', error);
+    logger.error('获取文档详情失败:', error);
     res.status(500).json({
       success: false,
       message: '获取文档详情失败'
@@ -247,7 +249,7 @@ router.post('/', authenticate, requireLevel(1), async (req, res) => {
     });
 
   } catch (error) {
-    console.error('创建文档失败:', error);
+    logger.error('创建文档失败:', error);
     res.status(500).json({
       success: false,
       message: '创建文档失败'
@@ -360,7 +362,7 @@ router.put('/:id', authenticate, requireLevel(1), async (req, res) => {
     });
 
   } catch (error) {
-    console.error('更新文档失败:', error);
+    logger.error('更新文档失败:', error);
     res.status(500).json({
       success: false,
       message: '更新文档失败'
@@ -399,7 +401,7 @@ router.delete('/:id', authenticate, requireLevel(2), async (req, res) => {
     });
 
   } catch (error) {
-    console.error('删除文档失败:', error);
+    logger.error('删除文档失败:', error);
     res.status(500).json({
       success: false,
       message: '删除文档失败'
@@ -452,7 +454,7 @@ router.get('/:id/versions', authenticate, async (req, res) => {
     });
 
   } catch (error) {
-    console.error('获取版本历史失败:', error);
+    logger.error('获取版本历史失败:', error);
     res.status(500).json({
       success: false,
       message: '获取版本历史失败'
@@ -543,7 +545,7 @@ router.post('/:id/restore/:version', authenticate, requireLevel(1), async (req, 
     });
 
   } catch (error) {
-    console.error('恢复版本失败:', error);
+    logger.error('恢复版本失败:', error);
     res.status(500).json({
       success: false,
       message: '恢复版本失败'
@@ -583,7 +585,7 @@ router.get('/categories', authenticate, async (req, res) => {
     });
 
   } catch (error) {
-    console.error('获取分类列表失败:', error);
+    logger.error('获取分类列表失败:', error);
     res.status(500).json({
       success: false,
       message: '获取分类列表失败'
@@ -633,7 +635,7 @@ router.post('/categories', authenticate, requireLevel(3), async (req, res) => {
     });
 
   } catch (error) {
-    console.error('创建分类失败:', error);
+    logger.error('创建分类失败:', error);
     res.status(500).json({
       success: false,
       message: '创建分类失败'

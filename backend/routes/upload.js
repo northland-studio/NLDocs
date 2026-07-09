@@ -4,6 +4,8 @@ const path = require('path');
 const fs = require('fs');
 const { authenticate, requireLevel } = require('../middleware/auth');
 
+const logger = require('../utils/logger');
+
 const router = express.Router();
 
 // 确保上传目录存在
@@ -174,7 +176,7 @@ router.post('/', authenticate, upload.single('file'), (req, res) => {
     });
 
   } catch (error) {
-    console.error('Upload error:', error);
+    logger.error('Upload error:', error);
     res.status(500).json({
       success: false,
       message: '文件上传失败'
@@ -217,7 +219,7 @@ router.post('/multiple', authenticate, upload.array('files', 5), (req, res) => {
     });
 
   } catch (error) {
-    console.error('Multiple upload error:', error);
+    logger.error('Multiple upload error:', error);
     res.status(500).json({
       success: false,
       message: '文件上传失败'
@@ -262,7 +264,7 @@ router.get('/:filename', (req, res) => {
     res.sendFile(filePath);
 
   } catch (error) {
-    console.error('Get file error:', error);
+    logger.error('Get file error:', error);
     res.status(500).json({
       success: false,
       message: '获取文件失败'
@@ -308,7 +310,7 @@ router.delete('/:filename', authenticate, requireLevel(2), (req, res) => {
     });
 
   } catch (error) {
-    console.error('Delete file error:', error);
+    logger.error('Delete file error:', error);
     res.status(500).json({
       success: false,
       message: '删除文件失败'
@@ -353,7 +355,7 @@ router.use((err, req, res, next) => {
   }
 
   // 其他错误
-  console.error('Upload middleware error:', err);
+  logger.error('Upload middleware error:', err);
   res.status(500).json({
     success: false,
     message: '文件上传过程中发生错误'

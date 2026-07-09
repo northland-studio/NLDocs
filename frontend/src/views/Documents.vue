@@ -1,5 +1,10 @@
 <template>
   <div class="documents-page">
+    <!-- 页面标题 -->
+    <header class="page-header">
+      <h1 class="t-section-heading">文档</h1>
+    </header>
+
     <!-- 工具栏 -->
     <div class="toolbar">
       <div class="toolbar-left">
@@ -15,25 +20,29 @@
           <button v-if="searchKeyword" @click="clearSearch" class="clear-btn">×</button>
         </div>
 
-        <select v-model="selectedCategoryId" @change="handleCategoryChange" class="category-select">
-          <option value="">全部分类</option>
-          <option v-for="cat in categories" :key="cat.id" :value="cat.id">
-            {{ cat.name }} ({{ cat.document_count }})
-          </option>
-        </select>
+        <BaseSelect
+          v-model="selectedCategoryId"
+          placeholder="全部分类"
+          :options="categoryOptions"
+          class="filter-select"
+          @update:modelValue="handleCategoryChange"
+        />
 
-        <select v-if="canCreate" v-model="selectedStatus" @change="handleStatusChange" class="status-select">
-          <option value="">全部状态</option>
-          <option value="published">已发布</option>
-          <option value="draft">草稿</option>
-        </select>
+        <BaseSelect
+          v-if="canCreate"
+          v-model="selectedStatus"
+          placeholder="全部状态"
+          :options="statusOptions"
+          class="filter-select"
+          @update:modelValue="handleStatusChange"
+        />
       </div>
 
       <div class="toolbar-right">
-        <button v-if="canCreate" @click="createNewDocument" class="create-btn">
-          <PlusIcon />
+        <BaseButton v-if="canCreate" variant="primary" @click="createNewDocument">
+          <PlusIcon class="btn-icon" />
           新建文档
-        </button>
+        </BaseButton>
       </div>
     </div>
 
@@ -46,10 +55,11 @@
     </div>
 
     <div v-else class="document-grid">
-      <div
+      <BaseCard
         v-for="doc in documents"
         :key="doc.id"
         class="document-card"
+        elevated
         @click="viewDocument(doc.id)"
       >
         <div class="card-header">
@@ -65,32 +75,32 @@
         <div class="card-footer">
           <div class="card-meta">
             <span v-if="doc.category_name" class="meta-item">
-              <FolderIcon />
+              <FolderIcon class="meta-icon" />
               {{ doc.category_name }}
             </span>
             <span class="meta-item">
-              <UserIcon />
+              <UserIcon class="meta-icon" />
               {{ doc.author_name }}
             </span>
           </div>
           <span class="meta-time">{{ formatDate(doc.updated_at || doc.created_at) }}</span>
         </div>
-      </div>
+      </BaseCard>
     </div>
 
     <!-- 分页 -->
     <div v-if="totalPages > 1" class="pagination">
-      <button @click="prevPage" :disabled="currentPage === 1" class="page-btn">
+      <BaseButton variant="filter" :disabled="currentPage === 1" @click="prevPage">
         上一页
-      </button>
+      </BaseButton>
       <div class="page-info">
         <span class="current-page">{{ currentPage }}</span>
         <span class="page-divider">/</span>
         <span class="total-pages">{{ totalPages }}</span>
       </div>
-      <button @click="nextPage" :disabled="currentPage >= totalPages" class="page-btn">
+      <BaseButton variant="filter" :disabled="currentPage >= totalPages" @click="nextPage">
         下一页
-      </button>
+      </BaseButton>
     </div>
   </div>
 </template>
@@ -99,6 +109,9 @@
 import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { documentsApi } from '@/api/documents';
+import BaseButton from '@/components/BaseButton.vue';
+import BaseCard from '@/components/BaseCard.vue';
+import BaseSelect from '@/components/BaseSelect.vue';
 import SearchIcon from '@/assets/icons/SearchIcon.vue';
 import PlusIcon from '@/assets/icons/PlusIcon.vue';
 import DocumentIcon from '@/assets/icons/DocumentIcon.vue';
@@ -131,6 +144,19 @@ const canCreate = computed(() => {
   // Level >= 1 可以创建文档
   return (user.value.level || 0) >= 1;
 });
+
+// BaseSelect 选项格式化
+const categoryOptions = computed(() =>
+  categories.value.map((cat) => ({
+    value: cat.id,
+    label: `${cat.name} (${cat.document_count})`
+  }))
+);
+
+const statusOptions = computed(() => [
+  { value: 'published', label: '已发布' },
+  { value: 'draft', label: '草稿' }
+]);
 
 // 获取内容预览
 const getContentPreview = (content) => {
@@ -275,16 +301,26 @@ onMounted(() => {
 
 <style scoped>
 .documents-page {
-  padding: 20px;
-  max-width: 1400px;
+  max-width: 980px;
   margin: 0 auto;
+  padding: 32px 24px;
+}
+
+/* 页面标题 */
+.page-header {
+  margin-bottom: 24px;
+}
+
+.page-header .t-section-heading {
+  color: var(--color-text-primary);
+  margin: 0;
 }
 
 /* 工具栏 */
 .toolbar {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-end;
   margin-bottom: 24px;
   flex-wrap: wrap;
   gap: 16px;
@@ -297,6 +333,7 @@ onMounted(() => {
   flex-wrap: wrap;
 }
 
+/* 搜索框 - Apple filter 风格 */
 .search-box {
   position: relative;
   display: flex;
@@ -305,32 +342,33 @@ onMounted(() => {
 
 .search-icon {
   position: absolute;
-  left: 12px;
+  left: 14px;
   width: 18px;
   height: 18px;
-  color: var(--text-tertiary);
+  color: var(--color-text-tertiary);
   pointer-events: none;
 }
 
 .search-input {
   padding: 10px 36px 10px 40px;
-  border: 1px solid var(--input-border);
-  border-radius: 8px;
-  background: var(--input-bg);
-  color: var(--text-primary);
-  font-size: 14px;
+  border: 3px solid rgba(0, 0, 0, 0.04);
+  border-radius: var(--radius-comfortable);
+  background: #fafafc;
+  color: var(--color-text-primary);
+  font-family: var(--font-text);
+  font-size: 17px;
+  letter-spacing: -0.374px;
   width: 280px;
-  transition: all 0.2s;
+  transition: border-color 0.15s ease;
+  outline: none;
 }
 
 .search-input:focus {
-  outline: none;
-  border-color: var(--accent);
-  box-shadow: 0 0 0 3px var(--accent-light);
+  border-color: var(--color-accent);
 }
 
 .search-input::placeholder {
-  color: var(--text-tertiary);
+  color: var(--color-text-tertiary);
 }
 
 .clear-btn {
@@ -338,7 +376,7 @@ onMounted(() => {
   right: 8px;
   background: none;
   border: none;
-  color: var(--text-tertiary);
+  color: var(--color-text-tertiary);
   font-size: 20px;
   cursor: pointer;
   padding: 0 4px;
@@ -346,56 +384,11 @@ onMounted(() => {
 }
 
 .clear-btn:hover {
-  color: var(--text-primary);
+  color: var(--color-text-primary);
 }
 
-.category-select,
-.status-select {
-  padding: 10px 32px 10px 12px;
-  border: 1px solid var(--input-border);
-  border-radius: 8px;
-  background: var(--input-bg);
-  color: var(--text-primary);
-  font-size: 14px;
-  cursor: pointer;
-  transition: all 0.2s;
-  appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23666' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 10px center;
-}
-
-.category-select:focus,
-.status-select:focus {
-  outline: none;
-  border-color: var(--accent);
-  box-shadow: 0 0 0 3px var(--accent-light);
-}
-
-.create-btn {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 20px;
-  background: var(--accent);
-  color: white;
-  border: none;
-  border-radius: 8px;
-  font-size: 14px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.create-btn:hover {
-  background: var(--accent-hover);
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(0, 74, 173, 0.3);
-}
-
-.create-btn svg {
-  width: 18px;
-  height: 18px;
+.filter-select {
+  min-width: 160px;
 }
 
 /* 加载和空状态 */
@@ -406,36 +399,34 @@ onMounted(() => {
   align-items: center;
   justify-content: center;
   padding: 80px 20px;
-  color: var(--text-secondary);
+  color: var(--color-text-secondary);
+  font-family: var(--font-text);
 }
 
 .empty-icon {
   width: 64px;
   height: 64px;
-  color: var(--text-tertiary);
+  color: var(--color-text-tertiary);
   margin-bottom: 16px;
 }
 
 .empty-state p {
-  font-size: 16px;
+  font-size: 17px;
+  letter-spacing: -0.374px;
 }
 
-/* 文档网格 */
+/* 文档网格 - 每行3列 */
 .document-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  grid-template-columns: repeat(3, 1fr);
   gap: 20px;
   margin-bottom: 32px;
 }
 
 /* 文档卡片 */
 .document-card {
-  background: var(--card-bg);
-  border: 1px solid var(--card-border);
-  border-radius: 12px;
-  padding: 20px;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
   display: flex;
   flex-direction: column;
   min-height: 200px;
@@ -443,8 +434,6 @@ onMounted(() => {
 
 .document-card:hover {
   transform: translateY(-2px);
-  box-shadow: var(--shadow-lg);
-  border-color: var(--accent);
 }
 
 .card-header {
@@ -456,11 +445,13 @@ onMounted(() => {
 }
 
 .card-title {
-  font-size: 18px;
+  font-family: var(--font-display);
+  font-size: 21px;
   font-weight: 600;
-  color: var(--text-primary);
+  line-height: 1.19;
+  letter-spacing: 0.231px;
+  color: var(--color-text-primary);
   margin: 0;
-  line-height: 1.4;
   flex: 1;
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -470,27 +461,32 @@ onMounted(() => {
 
 .status-badge {
   padding: 4px 10px;
-  border-radius: 12px;
+  border-radius: var(--radius-pill);
+  font-family: var(--font-text);
   font-size: 12px;
-  font-weight: 500;
+  font-weight: 600;
+  line-height: 1.33;
+  letter-spacing: -0.12px;
   white-space: nowrap;
 }
 
 .status-badge.draft {
-  background: var(--warning);
-  color: white;
+  background: var(--color-warning);
+  color: #ffffff;
 }
 
 .status-badge.published {
-  background: var(--success);
-  color: white;
+  background: var(--color-success);
+  color: #ffffff;
 }
 
 .card-content {
   flex: 1;
+  font-family: var(--font-text);
   font-size: 14px;
-  line-height: 1.6;
-  color: var(--text-secondary);
+  line-height: 1.43;
+  letter-spacing: -0.224px;
+  color: var(--color-text-secondary);
   margin: 0 0 16px 0;
   display: -webkit-box;
   -webkit-line-clamp: 3;
@@ -503,7 +499,7 @@ onMounted(() => {
   justify-content: space-between;
   align-items: center;
   padding-top: 12px;
-  border-top: 1px solid var(--border-light);
+  border-top: 1px solid var(--color-border);
 }
 
 .card-meta {
@@ -517,18 +513,22 @@ onMounted(() => {
   display: flex;
   align-items: center;
   gap: 4px;
-  font-size: 13px;
-  color: var(--text-secondary);
+  font-family: var(--font-text);
+  font-size: 12px;
+  letter-spacing: -0.12px;
+  color: var(--color-text-secondary);
 }
 
-.meta-item svg {
+.meta-icon {
   width: 14px;
   height: 14px;
 }
 
 .meta-time {
+  font-family: var(--font-text);
   font-size: 12px;
-  color: var(--text-tertiary);
+  letter-spacing: -0.12px;
+  color: var(--color-text-tertiary);
 }
 
 /* 分页 */
@@ -540,54 +540,45 @@ onMounted(() => {
   margin-top: 32px;
 }
 
-.page-btn {
-  padding: 8px 20px;
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  background: var(--bg-secondary);
-  color: var(--text-primary);
-  font-size: 14px;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.page-btn:hover:not(:disabled) {
-  background: var(--accent);
-  color: white;
-  border-color: var(--accent);
-}
-
-.page-btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
 .page-info {
   display: flex;
   align-items: center;
   gap: 8px;
+  font-family: var(--font-text);
   font-size: 14px;
-  color: var(--text-secondary);
+  letter-spacing: -0.224px;
+  color: var(--color-text-secondary);
 }
 
 .current-page {
   font-weight: 600;
-  color: var(--accent);
+  color: var(--color-accent);
   font-size: 16px;
 }
 
 .page-divider {
-  color: var(--text-tertiary);
+  color: var(--color-text-tertiary);
 }
 
 .total-pages {
-  color: var(--text-secondary);
+  color: var(--color-text-secondary);
+}
+
+.btn-icon {
+  width: 18px;
+  height: 18px;
 }
 
 /* 响应式 */
-@media (max-width: 768px) {
+@media (max-width: 834px) {
+  .document-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
   .documents-page {
-    padding: 16px;
+    padding: 24px 16px;
   }
 
   .toolbar {
@@ -597,20 +588,15 @@ onMounted(() => {
 
   .toolbar-left {
     flex-direction: column;
+    align-items: stretch;
   }
 
   .search-input {
     width: 100%;
   }
 
-  .category-select,
-  .status-select {
+  .filter-select {
     width: 100%;
-  }
-
-  .create-btn {
-    width: 100%;
-    justify-content: center;
   }
 
   .document-grid {

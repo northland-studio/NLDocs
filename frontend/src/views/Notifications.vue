@@ -1,10 +1,10 @@
 <template>
   <div class="notifications-page">
     <div class="page-header">
-      <h1>通知中心</h1>
-      <button v-if="unreadCount > 0" @click="markAllAsRead" class="mark-all-btn">
+      <h1 class="t-section-heading">通知中心</h1>
+      <BaseButton v-if="unreadCount > 0" variant="primary" @click="markAllAsRead">
         全部标记已读
-      </button>
+      </BaseButton>
     </div>
 
     <div v-if="loading" class="loading">加载中...</div>
@@ -15,7 +15,7 @@
       </div>
 
       <div v-else class="notifications-list">
-        <div
+        <BaseCard
           v-for="notification in notifications"
           :key="notification.id"
           :class="['notification-item', { unread: !notification.is_read }]"
@@ -31,36 +31,36 @@
             <div class="notification-time">{{ formatTime(notification.created_at) }}</div>
           </div>
           <div class="notification-actions">
-            <button
+            <BaseButton
               v-if="!notification.is_read"
+              variant="filter"
               @click="markAsRead(notification.id)"
-              class="action-btn read"
             >
               标记已读
-            </button>
-            <button @click="deleteNotification(notification.id)" class="action-btn delete">
+            </BaseButton>
+            <BaseButton variant="dark" @click="deleteNotification(notification.id)">
               删除
-            </button>
+            </BaseButton>
           </div>
-        </div>
+        </BaseCard>
       </div>
 
       <div v-if="pagination.total > pagination.limit" class="pagination">
-        <button
-          @click="loadPage(pagination.page - 1)"
+        <BaseButton
+          variant="filter"
           :disabled="pagination.page === 1"
-          class="page-btn"
+          @click="loadPage(pagination.page - 1)"
         >
           上一页
-        </button>
+        </BaseButton>
         <span class="page-info">{{ pagination.page }} / {{ pagination.total_pages }}</span>
-        <button
-          @click="loadPage(pagination.page + 1)"
+        <BaseButton
+          variant="filter"
           :disabled="pagination.page === pagination.total_pages"
-          class="page-btn"
+          @click="loadPage(pagination.page + 1)"
         >
           下一页
-        </button>
+        </BaseButton>
       </div>
     </div>
   </div>
@@ -69,6 +69,8 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { notificationsApi } from '@/api/notifications';
+import BaseButton from '@/components/BaseButton.vue';
+import BaseCard from '@/components/BaseCard.vue';
 
 const notifications = ref([]);
 const loading = ref(false);
@@ -161,52 +163,41 @@ onMounted(() => {
 
 <style scoped>
 .notifications-page {
-  padding: 20px;
-  max-width: 800px;
+  max-width: 980px;
   margin: 0 auto;
+  padding: 32px 24px;
 }
 
 .page-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  gap: 16px;
 }
 
-.page-header h1 {
-  font-size: 24px;
-  font-weight: 600;
-  color: var(--text-primary);
+.page-header .t-section-heading {
+  color: var(--color-text-primary);
   margin: 0;
-}
-
-.mark-all-btn {
-  padding: 8px 16px;
-  background: var(--accent);
-  color: white;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 14px;
-  transition: all 0.2s;
-}
-
-.mark-all-btn:hover {
-  opacity: 0.9;
 }
 
 .loading {
   padding: 40px;
   text-align: center;
-  color: var(--text-secondary);
+  color: var(--color-text-secondary);
+  font-family: var(--font-text);
 }
 
 .empty-state {
-  padding: 40px;
+  padding: 60px 20px;
   text-align: center;
-  color: var(--text-secondary);
-  background: var(--bg-secondary);
-  border-radius: 8px;
+  color: var(--color-text-secondary);
+  background: var(--color-bg-secondary);
+  border-radius: var(--radius-large);
+  font-family: var(--font-text);
+  font-size: 17px;
+  letter-spacing: -0.374px;
 }
 
 .notifications-list {
@@ -215,19 +206,17 @@ onMounted(() => {
   gap: 12px;
 }
 
+/* 通知项 - BaseCard 包裹 */
 .notification-item {
   display: flex;
   gap: 15px;
-  padding: 15px;
-  background: var(--bg-secondary);
-  border-radius: 8px;
-  border: 1px solid var(--border);
-  transition: all 0.2s;
+  align-items: flex-start;
+  transition: background 0.15s ease;
 }
 
+/* 未读通知用 Apple Blue 浅色背景 */
 .notification-item.unread {
-  background: var(--accent-light);
-  border-color: var(--accent);
+  background: rgba(0, 113, 227, 0.08);
 }
 
 .notification-icon {
@@ -240,80 +229,64 @@ onMounted(() => {
   display: flex;
   justify-content: center;
   align-items: center;
-  border-radius: 8px;
-  font-size: 16px;
+  border-radius: var(--radius-standard);
+  font-family: var(--font-text);
+  font-size: 14px;
   font-weight: 600;
+  letter-spacing: -0.224px;
+  color: #ffffff;
 }
 
+/* 通知类型图标徽章用 Apple Blue/状态色 */
 .icon-badge.approval {
-  background: var(--warning);
-  color: white;
+  background: var(--color-warning);
 }
 
 .icon-badge.announcement {
-  background: var(--info);
-  color: white;
+  background: var(--color-info);
 }
 
 .icon-badge.system {
-  background: var(--accent);
-  color: white;
+  background: var(--color-accent);
 }
 
 .notification-content {
   flex: 1;
+  min-width: 0;
 }
 
 .notification-title {
-  font-size: 16px;
+  font-family: var(--font-display);
+  font-size: 17px;
   font-weight: 600;
-  color: var(--text-primary);
+  line-height: 1.24;
+  letter-spacing: -0.374px;
+  color: var(--color-text-primary);
   margin-bottom: 4px;
 }
 
 .notification-text {
+  font-family: var(--font-text);
   font-size: 14px;
-  color: var(--text-secondary);
+  line-height: 1.43;
+  letter-spacing: -0.224px;
+  color: var(--color-text-secondary);
   margin-bottom: 8px;
-  line-height: 1.5;
 }
 
 .notification-time {
+  font-family: var(--font-text);
   font-size: 12px;
-  color: var(--text-tertiary);
+  letter-spacing: -0.12px;
+  color: var(--color-text-tertiary);
 }
 
 .notification-actions {
   flex-shrink: 0;
   display: flex;
   gap: 8px;
-}
-
-.action-btn {
-  padding: 6px 12px;
-  border: 1px solid var(--border);
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 12px;
-  transition: all 0.2s;
-  background: var(--bg-primary);
-  color: var(--text-primary);
-}
-
-.action-btn.read {
-  background: var(--success);
-  color: white;
-  border-color: var(--success);
-}
-
-.action-btn.delete {
-  background: var(--error);
-  color: white;
-  border-color: var(--error);
-}
-
-.action-btn:hover {
-  opacity: 0.9;
+  flex-wrap: wrap;
+  align-items: center;
 }
 
 .pagination {
@@ -321,32 +294,33 @@ onMounted(() => {
   justify-content: center;
   align-items: center;
   gap: 15px;
-  margin-top: 20px;
-}
-
-.page-btn {
-  padding: 8px 16px;
-  background: var(--bg-secondary);
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  cursor: pointer;
-  color: var(--text-primary);
-  font-size: 14px;
-  transition: all 0.2s;
-}
-
-.page-btn:hover:not(:disabled) {
-  background: var(--accent);
-  color: white;
-}
-
-.page-btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
+  margin-top: 32px;
 }
 
 .page-info {
-  color: var(--text-secondary);
+  color: var(--color-text-secondary);
+  font-family: var(--font-text);
   font-size: 14px;
+  letter-spacing: -0.224px;
+}
+
+/* 响应式 */
+@media (max-width: 640px) {
+  .notifications-page {
+    padding: 24px 16px;
+  }
+
+  .notification-item {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .notification-actions {
+    width: 100%;
+  }
+
+  .notification-actions .base-btn {
+    flex: 1;
+  }
 }
 </style>

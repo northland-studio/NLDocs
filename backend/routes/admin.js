@@ -2,6 +2,8 @@ const express = require('express');
 const { query, get, run } = require('../database');
 const { authenticate, requireLevel } = require('../middleware/auth');
 
+const logger = require('../utils/logger');
+
 const router = express.Router();
 
 /**
@@ -52,7 +54,7 @@ router.get('/users', authenticate, requireLevel(2), async (req, res) => {
     });
 
   } catch (error) {
-    console.error('获取用户列表错误:', error);
+    logger.error('获取用户列表错误:', error);
     res.status(500).json({
       success: false,
       message: '获取用户列表失败'
@@ -110,7 +112,7 @@ router.put('/users/:id/level', authenticate, requireLevel(2), async (req, res) =
     });
 
   } catch (error) {
-    console.error('修改用户权限错误:', error);
+    logger.error('修改用户权限错误:', error);
     res.status(500).json({
       success: false,
       message: '修改用户权限失败'
@@ -143,7 +145,7 @@ router.get('/categories', authenticate, requireLevel(2), async (req, res) => {
     });
 
   } catch (error) {
-    console.error('获取分类列表错误:', error);
+    logger.error('获取分类列表错误:', error);
     res.status(500).json({
       success: false,
       message: '获取分类列表失败'
@@ -195,7 +197,7 @@ router.post('/categories', authenticate, requireLevel(2), async (req, res) => {
     });
 
   } catch (error) {
-    console.error('创建分类错误:', error);
+    logger.error('创建分类错误:', error);
     res.status(500).json({
       success: false,
       message: '创建分类失败'
@@ -269,7 +271,7 @@ router.put('/categories/:id', authenticate, requireLevel(2), async (req, res) =>
     });
 
   } catch (error) {
-    console.error('更新分类错误:', error);
+    logger.error('更新分类错误:', error);
     res.status(500).json({
       success: false,
       message: '更新分类失败'
@@ -318,7 +320,7 @@ router.delete('/categories/:id', authenticate, requireLevel(2), async (req, res)
     });
 
   } catch (error) {
-    console.error('删除分类错误:', error);
+    logger.error('删除分类错误:', error);
     res.status(500).json({
       success: false,
       message: '删除分类失败'
@@ -355,7 +357,7 @@ router.get('/settings', authenticate, requireLevel(2), async (req, res) => {
     });
 
   } catch (error) {
-    console.error('获取系统设置错误:', error);
+    logger.error('获取系统设置错误:', error);
     res.status(500).json({
       success: false,
       message: '获取系统设置失败'
@@ -393,7 +395,7 @@ router.get('/stats', authenticate, requireLevel(2), async (req, res) => {
     });
 
   } catch (error) {
-    console.error('获取统计信息错误:', error);
+    logger.error('获取统计信息错误:', error);
     res.status(500).json({
       success: false,
       message: '获取统计信息失败'

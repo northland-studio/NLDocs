@@ -1,14 +1,14 @@
 <template>
   <div class="login-page">
     <div class="login-card">
-      <img src="/icon.png" alt="北域文档" class="logo">
-      <h1>北域文档</h1>
+      <img src="@/assets/icon.png" alt="北域文档" class="logo">
+      <h1 class="t-display-hero">北域文档</h1>
       <p class="subtitle-en">Northland Docs</p>
       <p class="subtitle">使用玄剑公会账号登录</p>
-      <button @click="handleLogin" class="login-btn">
+      <BaseButton variant="primary" block @click="handleLogin" class="login-btn">
         <UserIcon />
         玄剑公会账号登录
-      </button>
+      </BaseButton>
       <div class="footer">
         <p>由 <a href="https://beiyu.xuanjian.top" target="_blank">北域工作室</a> 维护</p>
         <p class="footer-en">Northland Studio</p>
@@ -19,14 +19,14 @@
 
 <script setup>
 import UserIcon from '@/assets/icons/UserIcon.vue';
+import BaseButton from '@/components/BaseButton.vue';
 
 const handleLogin = () => {
-  const clientId = 'NLDocs';  // 或从环境变量读取
+  const clientId = 'NLDocs';
   const redirectUri = encodeURIComponent(window.location.origin + '/callback');
-  const state = Math.random().toString(36).substring(7);  // 防CSRF
+  const state = Math.random().toString(36).substring(7);
   localStorage.setItem('oauth_state', state);
-  
-  // 跳转到玄剑官网授权页面
+
   window.location.href = `https://xuanjian.top/api/oauth/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=code&state=${state}`;
 };
 </script>
@@ -37,83 +37,60 @@ const handleLogin = () => {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+  background: #000000;
+  padding: 20px;
 }
 
 .login-card {
-  background: var(--bg-secondary);
-  padding: 3rem;
-  border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  background: var(--color-bg-secondary);
+  padding: 48px 40px;
+  border-radius: var(--radius-large);
+  box-shadow: var(--shadow-card);
   text-align: center;
   max-width: 400px;
-  width: 90%;
+  width: 100%;
 }
 
 .logo {
-  width: 64px;
-  height: 64px;
-  margin-bottom: 1rem;
-  border-radius: 12px;
-}
-
-h1 {
-  margin: 0 0 0.25rem 0;
-  color: var(--text-primary);
-  font-size: 1.8rem;
+  width: 72px;
+  height: 72px;
+  margin-bottom: 24px;
+  border-radius: var(--radius-standard);
 }
 
 .subtitle-en {
-  color: var(--text-secondary);
-  margin: 0 0 1.5rem 0;
-  font-size: 0.9rem;
-  font-weight: 500;
+  color: var(--color-text-secondary);
+  margin: 4px 0 32px 0;
+  font-family: var(--font-display);
+  font-size: 21px;
+  font-weight: 400;
+  line-height: 1.19;
+  letter-spacing: 0.231px;
 }
 
 .subtitle {
-  color: var(--text-secondary);
-  margin: 0 0 2rem 0;
-  font-size: 0.95rem;
+  color: var(--color-text-secondary);
+  margin: 0 0 32px 0;
+  font-family: var(--font-text);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.29;
+  letter-spacing: -0.224px;
 }
 
 .login-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  width: 100%;
-  padding: 0.875rem 1.5rem;
-  background: var(--accent-primary, #3b82f6);
-  color: white;
-  border: none;
-  border-radius: 8px;
-  font-size: 1rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.login-btn:hover {
-  background: var(--accent-hover, #2563eb);
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
-}
-
-.login-btn:active {
-  transform: translateY(0);
-}
-
-.login-btn svg {
-  width: 20px;
-  height: 20px;
+  margin-bottom: 8px;
 }
 
 .footer {
-  margin-top: 2rem;
-  padding-top: 1.5rem;
-  border-top: 1px solid var(--border-color, rgba(0, 0, 0, 0.1));
-  color: var(--text-secondary);
-  font-size: 0.85rem;
+  margin-top: 40px;
+  padding-top: 24px;
+  border-top: 1px solid var(--color-border);
+  color: var(--color-text-tertiary);
+  font-family: var(--font-text);
+  font-size: 12px;
+  line-height: 1.33;
+  letter-spacing: -0.12px;
 }
 
 .footer p {
@@ -121,7 +98,7 @@ h1 {
 }
 
 .footer a {
-  color: var(--accent-primary, #3b82f6);
+  color: var(--color-link);
   text-decoration: none;
 }
 
@@ -130,8 +107,10 @@ h1 {
 }
 
 .footer-en {
-  font-size: 0.75rem;
+  font-size: 10px;
   opacity: 0.7;
-  margin-top: 0.25rem;
+  margin-top: 4px;
+  line-height: 1.47;
+  letter-spacing: -0.08px;
 }
 </style>

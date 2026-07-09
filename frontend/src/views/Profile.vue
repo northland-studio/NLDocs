@@ -1,7 +1,11 @@
 <template>
   <div class="profile-page">
+    <header class="page-header">
+      <h1 class="t-section-heading">个人中心</h1>
+    </header>
+
     <!-- 用户信息卡片 -->
-    <div class="user-card">
+    <BaseCard class="user-card">
       <div class="user-avatar">
         <UserIcon class="avatar-icon" />
       </div>
@@ -32,20 +36,20 @@
           <span class="meta-item">最后登录：{{ formatDate(user.last_login) }}</span>
         </div>
       </div>
-      <button @click="handleLogout" class="logout-btn">
-        <LogoutIcon />
+      <BaseButton variant="dark" class="logout-btn" @click="handleLogout">
+        <LogoutIcon class="btn-icon" />
         <span>登出</span>
-      </button>
-    </div>
+      </BaseButton>
+    </BaseCard>
 
     <!-- 我的文档 -->
-    <div class="section">
+    <BaseCard class="section">
       <div class="section-header">
-        <h3>我的文档</h3>
-        <router-link to="/documents/new" class="create-link">
-          <PlusIcon />
+        <h3 class="section-title">我的文档</h3>
+        <BaseButton variant="pill" @click="$router.push('/documents/new')">
+          <PlusIcon class="btn-icon" />
           创建新文档
-        </router-link>
+        </BaseButton>
       </div>
 
       <div v-if="loadingDocuments" class="loading">加载中...</div>
@@ -72,12 +76,12 @@
           </div>
         </div>
       </div>
-    </div>
+    </BaseCard>
 
     <!-- 我的审批记录 -->
-    <div class="section">
+    <BaseCard class="section">
       <div class="section-header">
-        <h3>审批记录</h3>
+        <h3 class="section-title">审批记录</h3>
       </div>
 
       <div v-if="loadingApprovals" class="loading">加载中...</div>
@@ -107,7 +111,7 @@
           <p v-if="approval.comment" class="approval-comment">{{ approval.comment }}</p>
         </div>
       </div>
-    </div>
+    </BaseCard>
   </div>
 </template>
 
@@ -117,6 +121,8 @@ import { useRouter } from 'vue-router';
 import { authApi } from '@/api/auth';
 import { documentsApi } from '@/api/documents';
 import { approvalsApi } from '@/api/approvals';
+import BaseButton from '@/components/BaseButton.vue';
+import BaseCard from '@/components/BaseCard.vue';
 import UserIcon from '@/assets/icons/UserIcon.vue';
 import LogoutIcon from '@/assets/icons/LogoutIcon.vue';
 import PlusIcon from '@/assets/icons/PlusIcon.vue';
@@ -263,29 +269,35 @@ onMounted(() => {
 
 <style scoped>
 .profile-page {
-  padding: 20px;
-  max-width: 1200px;
+  max-width: 980px;
   margin: 0 auto;
+  padding: 32px 24px;
 }
 
-/* 用户卡片 */
+/* 页面标题 */
+.page-header {
+  margin-bottom: 24px;
+}
+
+.page-header .t-section-heading {
+  color: var(--color-text-primary);
+  margin: 0;
+}
+
+/* 用户卡片 - BaseCard */
 .user-card {
-  background: var(--card-bg);
-  border: 1px solid var(--card-border);
-  border-radius: 12px;
-  padding: 32px;
-  margin-bottom: 32px;
   display: flex;
   align-items: flex-start;
   gap: 24px;
+  margin-bottom: 20px;
   position: relative;
 }
 
 .user-avatar {
   width: 80px;
   height: 80px;
-  border-radius: 50%;
-  background: var(--accent-light);
+  border-radius: var(--radius-circle);
+  background: rgba(0, 113, 227, 0.1);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -295,17 +307,21 @@ onMounted(() => {
 .avatar-icon {
   width: 48px;
   height: 48px;
-  color: var(--accent);
+  color: var(--color-accent);
 }
 
 .user-details {
   flex: 1;
+  min-width: 0;
 }
 
 .user-name {
-  font-size: 24px;
+  font-family: var(--font-display);
+  font-size: 28px;
   font-weight: 600;
-  color: var(--text-primary);
+  line-height: 1.14;
+  letter-spacing: 0.196px;
+  color: var(--color-text-primary);
   margin: 0 0 12px 0;
 }
 
@@ -313,47 +329,51 @@ onMounted(() => {
   display: flex;
   gap: 8px;
   margin-bottom: 16px;
+  flex-wrap: wrap;
 }
 
 .level-badge,
 .title-badge {
   padding: 4px 12px;
-  border-radius: 12px;
+  border-radius: var(--radius-pill);
+  font-family: var(--font-text);
   font-size: 12px;
-  font-weight: 500;
+  font-weight: 600;
+  line-height: 1.33;
+  letter-spacing: -0.12px;
 }
 
 .level-badge {
-  background: var(--accent);
-  color: white;
+  background: var(--color-accent);
+  color: #ffffff;
 }
 
 .level-badge.level-0 {
-  background: var(--text-tertiary);
+  background: var(--color-text-tertiary);
 }
 
 .level-badge.level-1 {
-  background: var(--success);
+  background: var(--color-success);
 }
 
 .level-badge.level-2 {
-  background: var(--warning);
+  background: var(--color-warning);
 }
 
 .level-badge.level-3 {
-  background: var(--info);
+  background: var(--color-info);
 }
 
 .title-badge {
-  background: var(--bg-secondary);
-  color: var(--text-primary);
-  border: 1px solid var(--border);
+  background: var(--color-bg-tertiary);
+  color: var(--color-text-primary);
 }
 
 .user-stats {
   display: flex;
   gap: 24px;
   margin-bottom: 16px;
+  flex-wrap: wrap;
 }
 
 .stat-item {
@@ -363,57 +383,42 @@ onMounted(() => {
 }
 
 .stat-label {
+  font-family: var(--font-text);
   font-size: 12px;
-  color: var(--text-tertiary);
+  letter-spacing: -0.12px;
+  color: var(--color-text-tertiary);
 }
 
 .stat-value {
-  font-size: 20px;
+  font-family: var(--font-display);
+  font-size: 24px;
   font-weight: 600;
-  color: var(--accent);
+  line-height: 1.1;
+  color: var(--color-accent);
 }
 
 .user-meta {
   display: flex;
   flex-wrap: wrap;
   gap: 16px;
+  font-family: var(--font-text);
   font-size: 13px;
-  color: var(--text-secondary);
+  letter-spacing: -0.12px;
+  color: var(--color-text-secondary);
 }
 
 .logout-btn {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 12px 24px;
-  background: var(--bg-secondary);
-  color: var(--error);
-  border: 1px solid var(--error);
-  border-radius: 8px;
-  font-size: 14px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s;
   flex-shrink: 0;
 }
 
-.logout-btn:hover {
-  background: var(--error);
-  color: white;
-}
-
-.logout-btn svg {
+.btn-icon {
   width: 18px;
   height: 18px;
 }
 
-/* 区块 */
+/* 区块 - BaseCard */
 .section {
-  background: var(--card-bg);
-  border: 1px solid var(--card-border);
-  border-radius: 12px;
-  padding: 24px;
-  margin-bottom: 24px;
+  margin-bottom: 20px;
 }
 
 .section-header {
@@ -421,36 +426,18 @@ onMounted(() => {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 12px;
 }
 
-.section-header h3 {
-  font-size: 18px;
+.section-title {
+  font-family: var(--font-display);
+  font-size: 21px;
   font-weight: 600;
-  color: var(--text-primary);
+  line-height: 1.19;
+  letter-spacing: 0.231px;
+  color: var(--color-text-primary);
   margin: 0;
-}
-
-.create-link {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 8px 16px;
-  background: var(--accent);
-  color: white;
-  border-radius: 8px;
-  font-size: 14px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.create-link:hover {
-  background: var(--accent-hover);
-}
-
-.create-link svg {
-  width: 16px;
-  height: 16px;
 }
 
 /* 加载和空状态 */
@@ -461,18 +448,20 @@ onMounted(() => {
   align-items: center;
   justify-content: center;
   padding: 40px 20px;
-  color: var(--text-secondary);
+  color: var(--color-text-secondary);
+  font-family: var(--font-text);
 }
 
 .empty-icon {
   width: 48px;
   height: 48px;
-  color: var(--text-tertiary);
+  color: var(--color-text-tertiary);
   margin-bottom: 12px;
 }
 
 .empty-state p {
   font-size: 14px;
+  letter-spacing: -0.224px;
 }
 
 /* 文档列表 */
@@ -484,16 +473,14 @@ onMounted(() => {
 
 .document-item {
   padding: 16px;
-  background: var(--bg-secondary);
-  border: 1px solid var(--border);
-  border-radius: 8px;
+  background: var(--color-bg-tertiary);
+  border-radius: var(--radius-standard);
   cursor: pointer;
-  transition: all 0.2s;
+  transition: transform 0.15s ease;
 }
 
 .document-item:hover {
-  border-color: var(--accent);
-  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
 }
 
 .doc-header {
@@ -505,35 +492,60 @@ onMounted(() => {
 }
 
 .doc-title {
-  font-size: 16px;
-  font-weight: 500;
-  color: var(--text-primary);
+  font-family: var(--font-display);
+  font-size: 17px;
+  font-weight: 600;
+  line-height: 1.24;
+  letter-spacing: -0.374px;
+  color: var(--color-text-primary);
   margin: 0;
   flex: 1;
 }
 
 .status-badge {
   padding: 4px 10px;
-  border-radius: 12px;
+  border-radius: var(--radius-pill);
+  font-family: var(--font-text);
   font-size: 12px;
-  font-weight: 500;
+  font-weight: 600;
+  line-height: 1.33;
+  letter-spacing: -0.12px;
+  white-space: nowrap;
 }
 
 .status-badge.draft {
-  background: var(--warning);
-  color: white;
+  background: var(--color-warning);
+  color: #ffffff;
 }
 
 .status-badge.published {
-  background: var(--success);
-  color: white;
+  background: var(--color-success);
+  color: #ffffff;
+}
+
+.status-badge.pending {
+  background: var(--color-warning);
+  color: #ffffff;
+}
+
+.status-badge.approved {
+  background: var(--color-success);
+  color: #ffffff;
+}
+
+.status-badge.rejected {
+  background: var(--color-error);
+  color: #ffffff;
 }
 
 .doc-meta {
   display: flex;
   gap: 12px;
+  font-family: var(--font-text);
   font-size: 13px;
-  color: var(--text-secondary);
+  letter-spacing: -0.12px;
+  color: var(--color-text-secondary);
+  flex-wrap: wrap;
 }
 
 /* 审批列表 */
@@ -545,16 +557,14 @@ onMounted(() => {
 
 .approval-item {
   padding: 16px;
-  background: var(--bg-secondary);
-  border: 1px solid var(--border);
-  border-radius: 8px;
+  background: var(--color-bg-tertiary);
+  border-radius: var(--radius-standard);
   cursor: pointer;
-  transition: all 0.2s;
+  transition: transform 0.15s ease;
 }
 
 .approval-item:hover {
-  border-color: var(--accent);
-  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
 }
 
 .approval-header {
@@ -566,67 +576,63 @@ onMounted(() => {
 }
 
 .approval-title {
-  font-size: 16px;
-  font-weight: 500;
-  color: var(--text-primary);
+  font-family: var(--font-display);
+  font-size: 17px;
+  font-weight: 600;
+  line-height: 1.24;
+  letter-spacing: -0.374px;
+  color: var(--color-text-primary);
   margin: 0;
   flex: 1;
-}
-
-.status-badge.pending {
-  background: var(--warning);
-  color: white;
-}
-
-.status-badge.approved {
-  background: var(--success);
-  color: white;
-}
-
-.status-badge.rejected {
-  background: var(--error);
-  color: white;
 }
 
 .approval-meta {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
+  font-family: var(--font-text);
   font-size: 13px;
-  color: var(--text-secondary);
+  letter-spacing: -0.12px;
+  color: var(--color-text-secondary);
   margin-bottom: 8px;
 }
 
 .approval-comment {
+  font-family: var(--font-text);
   font-size: 13px;
-  color: var(--text-secondary);
+  line-height: 1.43;
+  letter-spacing: -0.12px;
+  color: var(--color-text-secondary);
   margin: 0;
-  line-height: 1.5;
+}
+
+.meta-text {
+  font-family: var(--font-text);
+  font-size: 13px;
+  letter-spacing: -0.12px;
+  color: var(--color-text-secondary);
 }
 
 /* 响应式 */
-@media (max-width: 768px) {
+@media (max-width: 640px) {
   .profile-page {
-    padding: 16px;
+    padding: 24px 16px;
   }
 
   .user-card {
-    padding: 20px;
     flex-direction: column;
     align-items: center;
+    text-align: center;
+  }
+
+  .user-badges,
+  .user-stats,
+  .user-meta {
+    justify-content: center;
   }
 
   .logout-btn {
     width: 100%;
-    justify-content: center;
-  }
-
-  .user-stats {
-    justify-content: center;
-  }
-
-  .user-meta {
-    justify-content: center;
   }
 
   .document-list,

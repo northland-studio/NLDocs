@@ -2,6 +2,8 @@ const express = require('express');
 const { get, run, query } = require('../database');
 const { authenticate, requireLevel } = require('../middleware/auth');
 
+const logger = require('../utils/logger');
+
 const router = express.Router();
 
 /**
@@ -66,7 +68,7 @@ router.get('/', async (req, res) => {
     });
 
   } catch (error) {
-    console.error('Get announcements error:', error);
+    logger.error('Get announcements error:', error);
     res.status(500).json({
       success: false,
       message: '获取公告列表失败'
@@ -124,7 +126,7 @@ router.get('/stats', authenticate, requireLevel(1), async (req, res) => {
     });
 
   } catch (error) {
-    console.error('Get announcement stats error:', error);
+    logger.error('Get announcement stats error:', error);
     res.status(500).json({
       success: false,
       message: '获取公告统计失败'
@@ -210,7 +212,7 @@ router.get('/:id', async (req, res) => {
     });
 
   } catch (error) {
-    console.error('Get announcement detail error:', error);
+    logger.error('Get announcement detail error:', error);
     res.status(500).json({
       success: false,
       message: '获取公告详情失败'
@@ -272,7 +274,7 @@ router.post('/', authenticate, requireLevel(1), async (req, res) => {
     });
 
   } catch (error) {
-    console.error('Create announcement error:', error);
+    logger.error('Create announcement error:', error);
     res.status(500).json({
       success: false,
       message: '创建公告失败'
@@ -375,7 +377,7 @@ router.put('/:id', authenticate, requireLevel(1), async (req, res) => {
     });
 
   } catch (error) {
-    console.error('Update announcement error:', error);
+    logger.error('Update announcement error:', error);
     res.status(500).json({
       success: false,
       message: '更新公告失败'
@@ -423,7 +425,7 @@ router.delete('/:id', authenticate, requireLevel(2), async (req, res) => {
     });
 
   } catch (error) {
-    console.error('Delete announcement error:', error);
+    logger.error('Delete announcement error:', error);
     res.status(500).json({
       success: false,
       message: '删除公告失败'
@@ -508,7 +510,7 @@ router.put('/:id/publish', authenticate, requireLevel(1), async (req, res) => {
     });
 
   } catch (error) {
-    console.error('Publish announcement error:', error);
+    logger.error('Publish announcement error:', error);
     res.status(500).json({
       success: false,
       message: '发布公告失败'

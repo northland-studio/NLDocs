@@ -1,45 +1,42 @@
 <template>
   <div class="document-edit">
     <div class="header">
-      <h1>{{ isNewDocument ? '新建文档' : '编辑文档' }}</h1>
+      <h1 class="t-section-heading">{{ isNewDocument ? '新建文档' : '编辑文档' }}</h1>
       <div class="actions">
-        <button @click="goBack" class="btn-secondary">取消</button>
-        <button @click="saveAsDraft" class="btn-secondary" :disabled="saving">
+        <BaseButton variant="filter" @click="goBack">取消</BaseButton>
+        <BaseButton variant="dark" :disabled="saving" @click="saveAsDraft">
           {{ saving ? '保存中...' : '保存为草稿' }}
-        </button>
-        <button @click="publishDocument" class="btn-primary" :disabled="saving">
+        </BaseButton>
+        <BaseButton variant="primary" :disabled="saving" @click="publishDocument">
           {{ saving ? '发布中...' : '发布' }}
-        </button>
+        </BaseButton>
       </div>
     </div>
 
     <div v-if="loading" class="loading">加载中...</div>
     <div v-else class="edit-container">
       <!-- 基本信息 -->
-      <div class="form-section">
+      <BaseCard class="form-section">
         <div class="form-group">
-          <label>标题</label>
-          <input
+          <BaseInput
             v-model="document.title"
-            type="text"
+            label="标题"
             placeholder="请输入文档标题"
-            class="input-field"
           />
         </div>
 
         <div class="form-group">
-          <label>分类</label>
-          <select v-model="document.categoryId" class="select-field">
-            <option value="">请选择分类</option>
-            <option v-for="cat in categories" :key="cat.id" :value="cat.id">
-              {{ cat.name }}
-            </option>
-          </select>
+          <BaseSelect
+            v-model="document.categoryId"
+            label="分类"
+            placeholder="请选择分类"
+            :options="categoryOptions"
+          />
         </div>
-      </div>
+      </BaseCard>
 
       <!-- Markdown编辑器 -->
-      <div class="editor-section">
+      <BaseCard class="editor-section">
         <div class="editor-tabs">
           <button
             @click="editorMode = 'edit'"
@@ -90,11 +87,11 @@
             </div>
           </div>
         </div>
-      </div>
+      </BaseCard>
 
       <!-- 文件上传区域 -->
-      <div class="upload-section">
-        <h2>附件文件</h2>
+      <BaseCard class="upload-section">
+        <h2 class="section-title">附件文件</h2>
         <div class="upload-area">
           <input
             type="file"
@@ -104,9 +101,9 @@
             accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png,.gif,.bmp,.webp,.txt,.js,.ts,.py,.java,.cpp,.c,.go,.rs,.php,.rb,.swift,.kt,.sql,.sh,.json,.xml,.html,.css,.yaml,.yml,.md"
             style="display: none"
           />
-          <button @click="triggerFileUpload" class="upload-btn">
+          <BaseButton variant="primary" @click="triggerFileUpload">
             选择文件
-          </button>
+          </BaseButton>
           <span class="upload-hint">
             支持的文件类型：PDF、Word、Excel、图片、代码文件等
           </span>
@@ -122,7 +119,7 @@
             <button @click="removeAttachment(index)" class="remove-btn">×</button>
           </div>
         </div>
-      </div>
+      </BaseCard>
     </div>
   </div>
 </template>
@@ -132,6 +129,10 @@ import { ref, computed, onMounted } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { marked } from 'marked';
 import { documentApi } from '../api/document';
+import BaseButton from '@/components/BaseButton.vue';
+import BaseCard from '@/components/BaseCard.vue';
+import BaseInput from '@/components/BaseInput.vue';
+import BaseSelect from '@/components/BaseSelect.vue';
 
 const router = useRouter();
 const route = useRoute();
@@ -156,6 +157,14 @@ const renderedContent = computed(() => {
   if (!document.value.content) return '';
   return marked(document.value.content);
 });
+
+// BaseSelect 选项格式化
+const categoryOptions = computed(() =>
+  categories.value.map((cat) => ({
+    value: cat.id,
+    label: cat.name
+  }))
+);
 
 const loadDocument = async () => {
   if (isNewDocument.value) {
@@ -298,153 +307,99 @@ onMounted(() => {
 
 <style scoped>
 .document-edit {
-  padding: 20px;
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 32px 24px;
 }
 
 .header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  gap: 16px;
 }
 
-.header h1 {
-  font-size: 24px;
-  font-weight: 600;
-  color: var(--text-primary);
+.header .t-section-heading {
+  color: var(--color-text-primary);
   margin: 0;
 }
 
 .actions {
   display: flex;
   gap: 10px;
-}
-
-.btn-secondary {
-  padding: 10px 20px;
-  background: var(--bg-secondary);
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  cursor: pointer;
-  color: var(--text-primary);
-  font-size: 14px;
-  transition: all 0.3s;
-}
-
-.btn-secondary:hover:not(:disabled) {
-  background: var(--bg-primary);
-  opacity: 0.8;
-}
-
-.btn-secondary:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.btn-primary {
-  padding: 10px 20px;
-  background: var(--accent);
-  color: white;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 14px;
-  font-weight: 500;
-  transition: all 0.3s;
-}
-
-.btn-primary:hover:not(:disabled) {
-  opacity: 0.9;
-  transform: translateY(-1px);
-}
-
-.btn-primary:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
+  flex-wrap: wrap;
 }
 
 .loading {
   padding: 40px;
   text-align: center;
-  color: var(--text-secondary);
+  color: var(--color-text-secondary);
+  font-family: var(--font-text);
 }
 
 .edit-container {
-  max-width: 1200px;
-  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 }
 
 .form-section {
-  background: var(--bg-primary);
-  padding: 20px;
-  border-radius: 8px;
-  margin-bottom: 20px;
-  border: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 }
 
 .form-group {
-  margin-bottom: 15px;
+  display: flex;
+  flex-direction: column;
 }
 
-.form-group:last-child {
-  margin-bottom: 0;
-}
-
-.form-group label {
-  display: block;
-  font-size: 14px;
+.section-title {
+  font-family: var(--font-display);
+  font-size: 21px;
   font-weight: 600;
-  color: var(--text-primary);
-  margin-bottom: 8px;
+  line-height: 1.19;
+  letter-spacing: 0.231px;
+  color: var(--color-text-primary);
+  margin: 0 0 15px 0;
 }
 
-.input-field,
-.select-field {
-  width: 100%;
-  padding: 10px 15px;
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  font-size: 14px;
-  background: var(--bg-secondary);
-  color: var(--text-primary);
-}
-
-.input-field:focus,
-.select-field:focus {
-  outline: none;
-  border-color: var(--accent);
-}
-
+/* 编辑器 */
 .editor-section {
-  background: var(--bg-primary);
-  border-radius: 8px;
-  margin-bottom: 20px;
-  border: 1px solid var(--border);
+  padding: 0;
+  overflow: hidden;
 }
 
 .editor-tabs {
   display: flex;
-  gap: 5px;
-  padding: 10px;
-  background: var(--bg-secondary);
-  border-bottom: 1px solid var(--border);
+  gap: 8px;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--color-border);
 }
 
 .editor-tab {
   padding: 8px 16px;
-  background: var(--bg-primary);
-  border: 1px solid var(--border);
-  border-radius: 6px;
+  background: #fafafc;
+  border: 1px solid transparent;
+  border-radius: var(--radius-pill);
   cursor: pointer;
-  color: var(--text-primary);
+  color: var(--color-text-secondary);
+  font-family: var(--font-text);
   font-size: 14px;
-  transition: all 0.3s;
+  font-weight: 400;
+  letter-spacing: -0.224px;
+  transition: all 0.15s ease;
+}
+
+.editor-tab:hover {
+  color: var(--color-text-primary);
 }
 
 .editor-tab.active {
-  background: var(--accent);
-  color: white;
-  border-color: var(--accent);
+  background: var(--color-accent);
+  color: #ffffff;
 }
 
 .editor-container {
@@ -456,22 +411,29 @@ onMounted(() => {
   padding: 20px;
 }
 
+/* 编辑器 textarea - Apple 输入样式 */
 .markdown-editor {
   width: 100%;
   min-height: 450px;
   padding: 15px;
-  border: 1px solid var(--border);
-  border-radius: 6px;
+  border: 3px solid rgba(0, 0, 0, 0.04);
+  border-radius: var(--radius-comfortable);
+  font-family: 'SF Mono', 'Consolas', 'Monaco', 'Courier New', monospace;
   font-size: 14px;
-  font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
-  background: var(--bg-secondary);
-  color: var(--text-primary);
+  line-height: 1.6;
+  background: #fafafc;
+  color: var(--color-text-primary);
   resize: vertical;
+  outline: none;
+  transition: border-color 0.15s ease;
 }
 
 .markdown-editor:focus {
-  outline: none;
-  border-color: var(--accent);
+  border-color: var(--color-accent);
+}
+
+.markdown-editor::placeholder {
+  color: var(--color-text-tertiary);
 }
 
 .split-mode {
@@ -486,7 +448,7 @@ onMounted(() => {
 }
 
 .split-pane:first-child {
-  border-right: 1px solid var(--border);
+  border-right: 1px solid var(--color-border);
 }
 
 .split-mode .markdown-editor {
@@ -496,8 +458,11 @@ onMounted(() => {
 }
 
 .markdown-content {
-  line-height: 1.8;
-  color: var(--text-primary);
+  line-height: 1.6;
+  color: var(--color-text-primary);
+  font-family: var(--font-text);
+  font-size: 17px;
+  letter-spacing: -0.374px;
 }
 
 .markdown-content :deep(h1),
@@ -506,6 +471,7 @@ onMounted(() => {
   margin-top: 24px;
   margin-bottom: 16px;
   font-weight: 600;
+  font-family: var(--font-display);
 }
 
 .markdown-content :deep(p) {
@@ -513,16 +479,16 @@ onMounted(() => {
 }
 
 .markdown-content :deep(code) {
-  background: var(--bg-secondary);
+  background: var(--color-bg-tertiary);
   padding: 2px 6px;
-  border-radius: 3px;
-  font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+  border-radius: var(--radius-micro);
+  font-family: 'SF Mono', 'Consolas', 'Monaco', 'Courier New', monospace;
 }
 
 .markdown-content :deep(pre) {
   background: #1e1e1e;
   padding: 15px;
-  border-radius: 6px;
+  border-radius: var(--radius-standard);
   overflow-x: auto;
 }
 
@@ -532,48 +498,23 @@ onMounted(() => {
   color: #d4d4d4;
 }
 
-.upload-section {
-  background: var(--bg-primary);
-  padding: 20px;
-  border-radius: 8px;
-  border: 1px solid var(--border);
-}
-
-.upload-section h2 {
-  font-size: 18px;
-  font-weight: 600;
-  color: var(--text-primary);
-  margin-bottom: 15px;
-}
-
+/* 附件区 */
 .upload-area {
   display: flex;
   align-items: center;
   gap: 15px;
   padding: 20px;
-  background: var(--bg-secondary);
-  border: 2px dashed var(--border);
-  border-radius: 6px;
-}
-
-.upload-btn {
-  padding: 10px 20px;
-  background: var(--accent);
-  color: white;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 14px;
-  transition: all 0.3s;
-}
-
-.upload-btn:hover {
-  opacity: 0.9;
+  background: #fafafc;
+  border: 3px solid rgba(0, 0, 0, 0.04);
+  border-radius: var(--radius-comfortable);
+  flex-wrap: wrap;
 }
 
 .upload-hint {
-  color: var(--text-secondary);
+  color: var(--color-text-secondary);
+  font-family: var(--font-text);
   font-size: 14px;
+  letter-spacing: -0.224px;
 }
 
 .attachments-list {
@@ -587,19 +528,21 @@ onMounted(() => {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 10px 15px;
-  background: var(--bg-secondary);
-  border-radius: 6px;
+  padding: 12px 15px;
+  background: #fafafc;
+  border-radius: var(--radius-standard);
 }
 
 .attachment-name {
+  font-family: var(--font-text);
   font-size: 14px;
-  color: var(--text-primary);
+  letter-spacing: -0.224px;
+  color: var(--color-text-primary);
 }
 
 .remove-btn {
   font-size: 20px;
-  color: var(--error);
+  color: var(--color-error);
   background: none;
   border: none;
   cursor: pointer;
@@ -608,10 +551,43 @@ onMounted(() => {
   display: flex;
   justify-content: center;
   align-items: center;
-  border-radius: 4px;
+  border-radius: var(--radius-standard);
+  transition: background 0.15s ease;
 }
 
 .remove-btn:hover {
-  background: rgba(255, 0, 0, 0.1);
+  background: rgba(239, 68, 68, 0.1);
+}
+
+/* 响应式 */
+@media (max-width: 834px) {
+  .split-mode {
+    flex-direction: column;
+    height: auto;
+  }
+
+  .split-pane:first-child {
+    border-right: none;
+    border-bottom: 1px solid var(--color-border);
+  }
+}
+
+@media (max-width: 640px) {
+  .document-edit {
+    padding: 24px 16px;
+  }
+
+  .header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .actions {
+    flex-direction: column;
+  }
+
+  .actions .base-btn {
+    width: 100%;
+  }
 }
 </style>

@@ -1,5 +1,7 @@
 const path = require('path');
 require('dotenv').config({ path: path.join(__dirname, '.env') });
+const logger = require('./utils/logger');
+const requestLogger = require('./middleware/requestLogger');
 
 const express = require('express');
 const cors = require('cors');
@@ -26,6 +28,9 @@ app.use(cors({
 // 中间件
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// 请求日志中间件
+app.use(requestLogger);
 
 // 静态文件服务 - 上传文件访问
 app.use('/uploads', express.static(path.join(__dirname, 'data/uploads')));
@@ -59,7 +64,7 @@ app.use((req, res) => {
 
 // 错误处理中间件
 app.use((err, req, res, next) => {
-  console.error('Error:', err);
+  logger.error('Error:', err);
   res.status(500).json({
     success: false,
     message: '服务器内部错误'
@@ -69,21 +74,21 @@ app.use((err, req, res, next) => {
 // 启动时检查数据库
 const initDatabaseCheck = async () => {
   try {
-    console.log('正在检查数据库...');
+    logger.info('正在检查数据库...');
     // 检查 users 表是否存在
     const tableCheck = await db.get(
       "SELECT name FROM sqlite_master WHERE type='table' AND name='users'"
     );
 
     if (!tableCheck) {
-      console.error('❌ 数据库表不存在，请先运行: npm run init-db');
+      logger.error('❌ 数据库表不存在，请先运行: npm run init-db');
       process.exit(1);
     }
 
-    console.log('✓ 数据库检查通过');
+    logger.info('✓ 数据库检查通过');
     return true;
   } catch (error) {
-    console.error('❌ 数据库检查失败:', error.message);
+    logger.error('❌ 数据库检查失败:', error.message);
     process.exit(1);
   }
 };
@@ -93,9 +98,9 @@ const startServer = async () => {
   await initDatabaseCheck();
 
   app.listen(PORT, () => {
-    console.log(`NLDocs Backend服务器已启动`);
-    console.log(`端口: ${PORT}`);
-    console.log(`环境: ${process.env.NODE_ENV || 'development'}`);
+    logger.info(`NLDocs Backend服务器已启动`);
+    logger.info(`端口: ${PORT}`);
+    logger.info(`环境: ${process.env.NODE_ENV || 'development'}`);
   });
 };
 

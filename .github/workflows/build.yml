@@ -85,16 +85,18 @@ jobs:
         run: |
           cd app/Android
           npm install
+          npx cap add android
           npx cap sync android
       - name: Build APK
         run: |
           cd app/Android/android
-          ./gradlew assembleRelease
+          chmod +x ./gradlew
+          ./gradlew assembleDebug
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: android-apk
-          path: app/Android/android/app/build/outputs/apk/release/*.apk
+          path: app/Android/android/app/build/outputs/apk/debug/*.apk
 
   build-desktop:
     needs: build-desktop-frontend

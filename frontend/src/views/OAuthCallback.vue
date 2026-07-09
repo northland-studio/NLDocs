@@ -37,12 +37,29 @@ onMounted(async () => {
   // 调用后端接口换取token
   try {
     const response = await axios.post('/api/auth/callback', { code });
-    localStorage.setItem('token', response.data.token);
-    localStorage.setItem('user', JSON.stringify(response.data.user));
-    localStorage.removeItem('oauth_state');
-    router.push('/');
+    if (response.data.success) {
+      localStorage.setItem('token', response.data.data.token);
+      localStorage.setItem('user', JSON.stringify(response.data.data.user));
+      localStorage.removeItem('oauth_state');
+      router.push('/');
+    } else {
+      error.value = '登录失败：' + (response.data.message || '未知错误');
+      loading.value = false;
+    }
   } catch (e) {
-    error.value = '登录失败：' + (e.response?.data?.message || e.message || '未知错误');
+    const errData = e.response?.data;
+    let errMsg = '登录失败';
+    if (errData?.message) {
+      errMsg += '：' + errData.message;
+    } else if (errData?.error) {
+      errMsg += '：' + errData.error;
+    } else if (e.message) {
+      errMsg += '：' + e.message;
+    }
+    if (errData?.details) {
+      console.error('OAuth error details:', errData.details);
+    }
+    error.value = errMsg;
     loading.value = false;
   }
 });

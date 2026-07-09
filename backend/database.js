@@ -82,8 +82,9 @@ const run = async (sql, params = []) => {
     db.run(sql, params);
     saveDatabase();
     // sql.js不直接返回lastInsertRowId，需要查询
-    const result = await get('SELECT last_insert_rowid() as id');
-    return { id: result?.id || 0, changes: db.getRowsModified() };
+    const row = await get('SELECT last_insert_rowid() as insertId');
+    const insertId = row?.insertId || 0;
+    return { id: insertId, changes: db.getRowsModified() };
   } catch (err) {
     throw err;
   }

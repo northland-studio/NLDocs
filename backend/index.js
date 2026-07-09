@@ -11,6 +11,7 @@ const announcementRoutes = require('./routes/announcements');
 const uploadRoutes = require('./routes/upload');
 const notificationRoutes = require('./routes/notifications');
 const adminRoutes = require('./routes/admin');
+const categoryRoutes = require('./routes/categories');
 const db = require('./database');
 
 const app = express();
@@ -46,6 +47,7 @@ app.use('/api/upload', uploadRoutes);
 app.use('/api/announcements', announcementRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/categories', categoryRoutes);
 
 // 404处理
 app.use((req, res) => {

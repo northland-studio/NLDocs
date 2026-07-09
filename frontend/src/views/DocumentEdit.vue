@@ -323,7 +323,7 @@ onMounted(() => {
 .btn-secondary {
   padding: 10px 20px;
   background: var(--bg-secondary);
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--border);
   border-radius: 6px;
   cursor: pointer;
   color: var(--text-primary);
@@ -343,7 +343,7 @@ onMounted(() => {
 
 .btn-primary {
   padding: 10px 20px;
-  background: var(--color-primary);
+  background: var(--accent);
   color: white;
   border: none;
   border-radius: 6px;
@@ -379,7 +379,7 @@ onMounted(() => {
   padding: 20px;
   border-radius: 8px;
   margin-bottom: 20px;
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--border);
 }
 
 .form-group {
@@ -402,7 +402,7 @@ onMounted(() => {
 .select-field {
   width: 100%;
   padding: 10px 15px;
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--border);
   border-radius: 6px;
   font-size: 14px;
   background: var(--bg-secondary);
@@ -412,14 +412,14 @@ onMounted(() => {
 .input-field:focus,
 .select-field:focus {
   outline: none;
-  border-color: var(--color-primary);
+  border-color: var(--accent);
 }
 
 .editor-section {
   background: var(--bg-primary);
   border-radius: 8px;
   margin-bottom: 20px;
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--border);
 }
 
 .editor-tabs {
@@ -427,13 +427,13 @@ onMounted(() => {
   gap: 5px;
   padding: 10px;
   background: var(--bg-secondary);
-  border-bottom: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--border);
 }
 
 .editor-tab {
   padding: 8px 16px;
   background: var(--bg-primary);
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--border);
   border-radius: 6px;
   cursor: pointer;
   color: var(--text-primary);
@@ -442,9 +442,9 @@ onMounted(() => {
 }
 
 .editor-tab.active {
-  background: var(--color-primary);
+  background: var(--accent);
   color: white;
-  border-color: var(--color-primary);
+  border-color: var(--accent);
 }
 
 .editor-container {
@@ -460,7 +460,7 @@ onMounted(() => {
   width: 100%;
   min-height: 450px;
   padding: 15px;
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--border);
   border-radius: 6px;
   font-size: 14px;
   font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
@@ -471,7 +471,7 @@ onMounted(() => {
 
 .markdown-editor:focus {
   outline: none;
-  border-color: var(--color-primary);
+  border-color: var(--accent);
 }
 
 .split-mode {
@@ -486,7 +486,7 @@ onMounted(() => {
 }
 
 .split-pane:first-child {
-  border-right: 1px solid var(--border-color);
+  border-right: 1px solid var(--border);
 }
 
 .split-mode .markdown-editor {
@@ -536,7 +536,7 @@ onMounted(() => {
   background: var(--bg-primary);
   padding: 20px;
   border-radius: 8px;
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--border);
 }
 
 .upload-section h2 {
@@ -552,13 +552,13 @@ onMounted(() => {
   gap: 15px;
   padding: 20px;
   background: var(--bg-secondary);
-  border: 2px dashed var(--border-color);
+  border: 2px dashed var(--border);
   border-radius: 6px;
 }
 
 .upload-btn {
   padding: 10px 20px;
-  background: var(--color-primary);
+  background: var(--accent);
   color: white;
   border: none;
   border-radius: 6px;
@@ -599,7 +599,7 @@ onMounted(() => {
 
 .remove-btn {
   font-size: 20px;
-  color: var(--color-error);
+  color: var(--error);
   background: none;
   border: none;
   cursor: pointer;

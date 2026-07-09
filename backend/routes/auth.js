@@ -57,15 +57,18 @@ router.post('/callback', async (req, res) => {
       }
     });
 
-    const userInfo = verifyResponse.data;
+    const verifyData = verifyResponse.data;
 
-    if (!userInfo || !userInfo.id) {
+    // 玄剑官网verify返回 {valid: true, user: {...}}
+    if (!verifyData || !verifyData.valid || !verifyData.user) {
       console.error('User info fetch failed:', verifyResponse.data);
       return res.status(401).json({
         success: false,
         message: '获取用户信息失败'
       });
     }
+
+    const userInfo = verifyData.user;
 
     // 3. 同步用户信息到本地数据库
     let user = await get(
@@ -98,7 +101,7 @@ router.post('/callback', async (req, res) => {
       user = await get('SELECT * FROM users WHERE xuanjian_id = ?', [userInfo.id]);
     } else {
       // 创建新用户
-      const result = await run(
+      await run(
         `INSERT INTO users (xuanjian_id, username, level, title, contribution, avatar)
          VALUES (?, ?, ?, ?, ?, ?)`,
         [
@@ -111,7 +114,16 @@ router.post('/callback', async (req, res) => {
         ]
       );
 
-      user = await get('SELECT * FROM users WHERE id = ?', [result.id]);
+      // 使用xuanjian_id查询新插入的用户
+      user = await get('SELECT * FROM users WHERE xuanjian_id = ?', [userInfo.id]);
+      
+      if (!user) {
+        console.error('Failed to fetch new user after insert, xuanjian_id:', userInfo.id);
+        return res.status(500).json({
+          success: false,
+          message: '创建用户记录失败'
+        });
+      }
     }
 
     // 4. 生成本地JWT token
@@ -147,20 +159,31 @@ router.post('/callback', async (req, res) => {
     });
 
   } catch (error) {
-    console.error('OAuth callback error:', error);
+    console.error('OAuth callback error:', error.message);
+    console.error('Error stack:', error.stack);
 
     if (error.response) {
       // 玄剑官网API返回错误
-      console.error('OAuth provider error:', error.response.data);
+      console.error('OAuth provider error status:', error.response.status);
+      console.error('OAuth provider error data:', JSON.stringify(error.response.data, null, 2));
       return res.status(error.response.status || 500).json({
         success: false,
-        message: error.response.data.message || 'OAuth认证失败'
+        message: `OAuth认证失败: ${error.response.data?.error || error.response.data?.message || '未知错误'}`,
+        details: error.response.data
+      });
+    }
+
+    if (error.request) {
+      console.error('No response received for request:', error.config?.url);
+      return res.status(503).json({
+        success: false,
+        message: 'OAuth服务不可用，请稍后重试'
       });
     }
 
     res.status(500).json({
       success: false,
-      message: 'OAuth认证过程中发生错误'
+      message: 'OAuth认证过程中发生错误: ' + error.message
     });
   }
 });

@@ -14,7 +14,7 @@
         </span>
       </button>
       <ThemeSwitch />
-      <div class="user-info" v-if="user && user.username">
+      <div class="user-info" v-if="user && user.username" @click="goToProfile">
         <img
           v-if="user.avatar"
           :src="user.avatar"
@@ -22,7 +22,7 @@
           class="user-avatar"
         />
         <span class="user-name">{{ user.username }}</span>
-        <button @click="handleLogout" class="logout-btn" aria-label="退出登录">
+        <button @click.stop="handleLogout" class="logout-btn" aria-label="退出登录">
           <LogoutIcon />
         </button>
       </div>
@@ -56,6 +56,10 @@ const loadUnreadCount = async () => {
 
 const goToNotifications = () => {
   router.push('/notifications');
+};
+
+const goToProfile = () => {
+  router.push('/profile');
 };
 
 const handleLogout = () => {
@@ -176,6 +180,7 @@ onUnmounted(() => {
   padding: 4px 8px 4px 4px;
   background: rgba(255, 255, 255, 0.1);
   border-radius: var(--radius-pill);
+  cursor: pointer;
 }
 
 .user-avatar {

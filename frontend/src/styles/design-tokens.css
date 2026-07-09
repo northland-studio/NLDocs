@@ -83,24 +83,24 @@
 [data-theme="dark"] {
   /* --- Colors: Backgrounds --- */
   --color-bg-primary: #000000;
-  --color-bg-secondary: #1d1d1f;
-  --color-bg-tertiary: #272729;
+  --color-bg-secondary: #1c1c1e;
+  --color-bg-tertiary: #2c2c2e;
   --color-bg-hero: #000000;
 
   /* --- Colors: Text --- */
   --color-text-primary: #ffffff;
-  --color-text-secondary: rgba(255, 255, 255, 0.8);
-  --color-text-tertiary: rgba(255, 255, 255, 0.48);
+  --color-text-secondary: #98989d;
+  --color-text-tertiary: #636366;
 
   /* --- Colors: Accent --- */
-  --color-accent: #0071e3;
+  --color-accent: #0a84ff;
 
   /* --- Colors: Links --- */
   --color-link: #2997ff;            /* Link on dark background */
 
   /* --- Colors: Surfaces & Borders --- */
   --color-border: rgba(255, 255, 255, 0.1);
-  --color-surface-dark-1: #272729;
+  --color-surface-dark-1: #2c2c2e;
 
   /* The remaining tokens (accent-hover, link-dark-bg, status colors,
      fonts, radii, shadows, spacing, nav) are unchanged from :root. */
@@ -123,7 +123,7 @@
   --text-tertiary: var(--color-text-tertiary);
   --accent: var(--color-accent);
   --accent-hover: var(--color-accent-hover);
-  --accent-light: rgba(0, 113, 227, 0.1);
+  --accent-light: color-mix(in srgb, var(--color-accent) 10%, transparent);
   --border: var(--color-border);
   --border-color: var(--color-border);
   --error: var(--color-error);

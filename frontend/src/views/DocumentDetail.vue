@@ -58,6 +58,10 @@
             v-else-if="getFileType(document.attachments[activeAttachment]?.filename) === 'xlsx'"
             :url="document.attachments[activeAttachment].url"
           />
+          <PptxViewer
+            v-else-if="getFileType(document.attachments[activeAttachment]?.filename) === 'pptx'"
+            :url="document.attachments[activeAttachment].url"
+          />
           <div
             v-else-if="getFileType(document.attachments[activeAttachment]?.filename) === 'image'"
             class="image-preview"
@@ -121,6 +125,7 @@ import BaseCard from '@/components/BaseCard.vue';
 import PdfViewer from '../components/preview/PdfViewer.vue';
 import DocxViewer from '../components/preview/DocxViewer.vue';
 import XlsxViewer from '../components/preview/XlsxViewer.vue';
+import PptxViewer from '../components/preview/PptxViewer.vue';
 import CodeViewer from '../components/preview/CodeViewer.vue';
 
 const router = useRouter();
@@ -174,6 +179,7 @@ const getFileType = (filename) => {
   if (ext === 'pdf') return 'pdf';
   if (ext === 'docx' || ext === 'doc') return 'docx';
   if (ext === 'xlsx' || ext === 'xls') return 'xlsx';
+  if (ext === 'pptx' || ext === 'ppt') return 'pptx';
   if (['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp'].includes(ext)) return 'image';
   if (['js', 'ts', 'py', 'java', 'cpp', 'c', 'go', 'rs', 'php', 'rb', 'swift', 'kt', 'sql', 'sh', 'json', 'xml', 'html', 'css', 'yaml', 'yml', 'md'].includes(ext)) return 'code';
   return 'other';

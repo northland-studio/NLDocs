@@ -242,7 +242,7 @@ const saveDocument = async (status) => {
     const data = {
       title: document.value.title,
       content: document.value.content,
-      categoryId: document.value.categoryId,
+      category_id: document.value.categoryId,
       status: status
     };
 

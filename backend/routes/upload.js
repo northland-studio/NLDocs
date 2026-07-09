@@ -21,6 +21,8 @@ const ALLOWED_MIME_TYPES = {
   'application/pdf': ['.pdf'],
   'application/vnd.openxmlformats-officedocument.wordprocessingml.document': ['.docx'],
   'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': ['.xlsx'],
+  'application/vnd.openxmlformats-officedocument.presentationml.document': ['.pptx'],
+  'application/vnd.ms-powerpoint': ['.ppt'],
   'text/plain': ['.txt'],
   // 图片
   'image/jpeg': ['.jpg', '.jpeg'],
@@ -45,7 +47,7 @@ const ALLOWED_MIME_TYPES = {
 // 扩展名白名单
 const ALLOWED_EXTENSIONS = [
   // 文档
-  '.md', '.pdf', '.docx', '.xlsx', '.txt',
+  '.md', '.pdf', '.docx', '.xlsx', '.pptx', '.ppt', '.txt',
   // 图片
   '.jpg', '.jpeg', '.png', '.gif', '.webp',
   // 代码
@@ -89,7 +91,7 @@ const fileFilter = (req, file, cb) => {
 const upload = multer({
   storage: storage,
   limits: {
-    fileSize: 10 * 1024 * 1024, // 10MB 限制
+    fileSize: 50 * 1024 * 1024, // 50MB 限制（支持 Office 文件）
     files: 5 // 最多5个文件
   },
   fileFilter: fileFilter
@@ -101,7 +103,7 @@ const upload = multer({
  * @returns {string} 文件类型分类
  */
 const getFileCategory = (ext) => {
-  const docExts = ['.md', '.pdf', '.docx', '.xlsx', '.txt'];
+  const docExts = ['.md', '.pdf', '.docx', '.xlsx', '.pptx', '.ppt', '.txt'];
   const imageExts = ['.jpg', '.jpeg', '.png', '.gif', '.webp'];
   const codeExts = ['.js', '.mjs', '.ts', '.tsx', '.py', '.java', '.go', '.rs', '.html', '.htm', '.css', '.json', '.xml'];
 
@@ -122,6 +124,8 @@ const getMimeType = (ext) => {
     '.pdf': 'application/pdf',
     '.docx': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
     '.xlsx': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    '.pptx': 'application/vnd.openxmlformats-officedocument.presentationml.document',
+    '.ppt': 'application/vnd.ms-powerpoint',
     '.txt': 'text/plain',
     '.jpg': 'image/jpeg',
     '.jpeg': 'image/jpeg',
@@ -325,7 +329,7 @@ router.use((err, req, res, next) => {
     if (err.code === 'LIMIT_FILE_SIZE') {
       return res.status(400).json({
         success: false,
-        message: '文件大小超过限制（最大10MB）'
+        message: '文件大小超过限制（最大50MB）'
       });
     }
     if (err.code === 'LIMIT_FILE_COUNT') {

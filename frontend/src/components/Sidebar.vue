@@ -29,6 +29,10 @@
       </router-link>
     </nav>
     <div class="nav-footer">
+      <router-link to="/download" class="nav-item">
+        <DownloadIcon />
+        <span v-if="!collapsed" class="nav-label">下载客户端</span>
+      </router-link>
       <router-link to="/settings" class="nav-item">
         <SettingsIcon />
         <span v-if="!collapsed" class="nav-label">设置</span>
@@ -45,6 +49,7 @@ import AnnouncementIcon from '@/assets/icons/AnnouncementIcon.vue';
 import ApprovalIcon from '@/assets/icons/ApprovalIcon.vue';
 import NotificationIcon from '@/assets/icons/NotificationIcon.vue';
 import SettingsIcon from '@/assets/icons/SettingsIcon.vue';
+import DownloadIcon from '@/assets/icons/DownloadIcon.vue';
 import { notificationsApi } from '@/api/notifications';
 
 defineProps(['collapsed']);

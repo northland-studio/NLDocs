@@ -17,6 +17,18 @@ const routes = [
     component: OAuthCallback,
     meta: { public: true }
   },
+  {
+    path: '/ios-install',
+    name: 'IOSInstall',
+    component: () => import('../views/IOSInstall.vue'),
+    meta: { public: true }
+  },
+  {
+    path: '/download',
+    name: 'Download',
+    component: () => import('../views/Download.vue'),
+    meta: { public: true }
+  },
   // 需要登录的路由（使用Layout）
   {
     path: '/',

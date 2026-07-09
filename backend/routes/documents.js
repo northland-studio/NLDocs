@@ -192,7 +192,7 @@ router.get('/:id', authenticate, async (req, res) => {
  */
 router.post('/', authenticate, requireLevel(1), async (req, res) => {
   try {
-    const { title, content, file_path, file_type, category_id } = req.body;
+    const { title, content, file_path, file_type, category_id, status } = req.body;
     const authorId = req.user.id;
 
     // 验证必填字段
@@ -206,7 +206,7 @@ router.post('/', authenticate, requireLevel(1), async (req, res) => {
     // 创建文档记录
     const insertSql = `
       INSERT INTO documents (title, content, file_path, file_type, category_id, author_id, status, version)
-      VALUES (?, ?, ?, ?, ?, ?, 'draft', 1)
+      VALUES (?, ?, ?, ?, ?, ?, ?, 1)
     `;
     const result = await run(insertSql, [
       title,
@@ -214,7 +214,8 @@ router.post('/', authenticate, requireLevel(1), async (req, res) => {
       file_path || null,
       file_type || null,
       category_id || null,
-      authorId
+      authorId,
+      status || 'draft'
     ]);
 
     const documentId = result.id;

@@ -1,0 +1,22 @@
+{
+  "appId": "top.northland.nldocs",
+  "appName": "北域文档",
+  "webDir": "../../frontend/dist",
+  "server": {
+    "androidScheme": "https"
+  },
+  "android": {
+    "allowMixedContent": true
+  },
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 2000,
+      "backgroundColor": "#0071e3",
+      "showSpinner": false
+    },
+    "StatusBar": {
+      "style": "DARK",
+      "backgroundColor": "#0071e3"
+    }
+  }
+}

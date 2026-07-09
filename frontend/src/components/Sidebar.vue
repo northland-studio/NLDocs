@@ -37,17 +37,38 @@
 </template>
 
 <script setup>
-import { computed } from 'vue';
+import { computed, ref, onMounted, onUnmounted } from 'vue';
 import HomeIcon from '@/assets/icons/HomeIcon.vue';
 import DocumentIcon from '@/assets/icons/DocumentIcon.vue';
 import AnnouncementIcon from '@/assets/icons/AnnouncementIcon.vue';
 import ApprovalIcon from '@/assets/icons/ApprovalIcon.vue';
 import NotificationIcon from '@/assets/icons/NotificationIcon.vue';
 import SettingsIcon from '@/assets/icons/SettingsIcon.vue';
+import { notificationsApi } from '@/api/notifications';
 
 defineProps(['collapsed']);
 const user = computed(() => JSON.parse(localStorage.getItem('user') || '{}'));
-const unreadCount = computed(() => 0); // 后续从API获取
+const unreadCount = ref(0);
+
+const loadUnreadCount = async () => {
+  try {
+    const response = await notificationsApi.getUnreadCount();
+    unreadCount.value = response.data.count;
+  } catch (error) {
+    console.error('加载未读数量失败:', error);
+  }
+};
+
+let interval;
+onMounted(() => {
+  loadUnreadCount();
+  // 每分钟刷新未读数量
+  interval = setInterval(loadUnreadCount, 60000);
+});
+
+onUnmounted(() => {
+  if (interval) clearInterval(interval);
+});
 </script>
 
 <style scoped>

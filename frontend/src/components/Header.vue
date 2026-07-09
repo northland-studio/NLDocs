@@ -7,6 +7,12 @@
       <h1>{{ title }}</h1>
     </div>
     <div class="header-actions">
+      <button class="notification-btn" @click="goToNotifications">
+        <NotificationIcon :size="20" />
+        <span v-if="unreadCount > 0" class="notification-badge">
+          {{ unreadCount > 99 ? '99+' : unreadCount }}
+        </span>
+      </button>
       <ThemeSwitch />
       <div class="user-info" v-if="user">
         <span>{{ user.username }}</span>
@@ -19,20 +25,49 @@
 </template>
 
 <script setup>
-import { computed } from 'vue';
+import { computed, ref, onMounted, onUnmounted } from 'vue';
+import { useRouter } from 'vue-router';
 import ThemeSwitch from './ThemeSwitch.vue';
 import MenuIcon from '@/assets/icons/MenuIcon.vue';
 import LogoutIcon from '@/assets/icons/LogoutIcon.vue';
+import NotificationIcon from '@/assets/icons/NotificationIcon.vue';
+import { notificationsApi } from '@/api/notifications';
 
 defineEmits(['toggle-sidebar']);
+const router = useRouter();
 const user = computed(() => JSON.parse(localStorage.getItem('user') || '{}'));
 const title = computed(() => 'NLDocs');
+const unreadCount = ref(0);
+
+const loadUnreadCount = async () => {
+  try {
+    const response = await notificationsApi.getUnreadCount();
+    unreadCount.value = response.data.count;
+  } catch (error) {
+    console.error('加载未读数量失败:', error);
+  }
+};
+
+const goToNotifications = () => {
+  router.push('/notifications');
+};
 
 const handleLogout = () => {
   localStorage.removeItem('token');
   localStorage.removeItem('user');
   window.location.href = '/login';
 };
+
+let interval;
+onMounted(() => {
+  loadUnreadCount();
+  // 每分钟刷新未读数量
+  interval = setInterval(loadUnreadCount, 60000);
+});
+
+onUnmounted(() => {
+  if (interval) clearInterval(interval);
+});
 </script>
 
 <style scoped>
@@ -84,6 +119,41 @@ const handleLogout = () => {
   display: flex;
   align-items: center;
   gap: 16px;
+}
+
+.notification-btn {
+  position: relative;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  color: var(--text-primary);
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.notification-btn:hover {
+  background: var(--bg-hover);
+}
+
+.notification-badge {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 4px;
+  background: var(--error);
+  color: white;
+  border-radius: 9px;
+  font-size: 11px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .user-info {

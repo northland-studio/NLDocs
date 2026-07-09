@@ -10,14 +10,23 @@ const approvalRoutes = require('./routes/approvals');
 const announcementRoutes = require('./routes/announcements');
 const uploadRoutes = require('./routes/upload');
 const notificationRoutes = require('./routes/notifications');
+const db = require('./database');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// CORS 配置
+app.use(cors({
+  origin: ['http://localhost:5173', 'http://localhost:3000'],
+  credentials: true
+}));
+
 // 中间件
-app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// 静态文件服务 - 上传文件访问
+app.use('/uploads', express.static(path.join(__dirname, 'data/uploads')));
 
 // 健康检查
 app.get('/health', (req, res) => {
@@ -46,16 +55,44 @@ app.use((req, res) => {
 
 // 错误处理中间件
 app.use((err, req, res, next) => {
-  console.error('Server error:', err);
+  console.error('Error:', err);
   res.status(500).json({
     success: false,
     message: '服务器内部错误'
   });
 });
 
+// 启动时检查数据库
+const initDatabaseCheck = async () => {
+  try {
+    console.log('正在检查数据库...');
+    // 检查 users 表是否存在
+    const tableCheck = await db.get(
+      "SELECT name FROM sqlite_master WHERE type='table' AND name='users'"
+    );
+
+    if (!tableCheck) {
+      console.error('❌ 数据库表不存在，请先运行: npm run init-db');
+      process.exit(1);
+    }
+
+    console.log('✓ 数据库检查通过');
+    return true;
+  } catch (error) {
+    console.error('❌ 数据库检查失败:', error.message);
+    process.exit(1);
+  }
+};
+
 // 启动服务器
-app.listen(PORT, () => {
-  console.log(`NLDocs Backend服务器已启动`);
-  console.log(`端口: ${PORT}`);
-  console.log(`环境: ${process.env.NODE_ENV || 'development'}`);
-});
+const startServer = async () => {
+  await initDatabaseCheck();
+
+  app.listen(PORT, () => {
+    console.log(`NLDocs Backend服务器已启动`);
+    console.log(`端口: ${PORT}`);
+    console.log(`环境: ${process.env.NODE_ENV || 'development'}`);
+  });
+};
+
+startServer();

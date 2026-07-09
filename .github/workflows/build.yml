@@ -1,4 +1,4 @@
-name: Build & Release
+name: Build and Release
 
 on:
   push:
@@ -9,7 +9,6 @@ permissions:
   contents: write
 
 jobs:
-  # Job 1: Build frontend
   build-web:
     runs-on: ubuntu-latest
     steps:
@@ -17,24 +16,56 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'npm'
-          cache-dependency-path: frontend/package-lock.json
-      - name: Install frontend dependencies
-        working-directory: frontend
-        run: npm ci
-      - name: Build frontend
-        working-directory: frontend
-        run: npm run build
-      - name: Upload frontend dist
+      - name: Build Web Frontend
+        run: |
+          cd frontend
+          npm install
+          npm run build
+      - name: Upload Web Dist
         uses: actions/upload-artifact@v4
         with:
           name: web-dist
           path: frontend/dist/
 
-  # Job 2: Build Android APK
-  build-android:
+  build-android-frontend:
     runs-on: ubuntu-latest
-    needs: build-web
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Build Android Frontend
+        run: |
+          cd app/Android/frontend
+          npm install
+          npm run build
+      - name: Upload Android Frontend Dist
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-frontend-dist
+          path: app/Android/frontend/dist/
+
+  build-desktop-frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Build Desktop Frontend
+        run: |
+          cd app/Desktop/frontend
+          npm install
+          npm run build
+      - name: Upload Desktop Frontend Dist
+        uses: actions/upload-artifact@v4
+        with:
+          name: desktop-frontend-dist
+          path: app/Desktop/frontend/dist/
+
+  build-android:
+    needs: build-android-frontend
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -44,50 +75,59 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '17'
-      - uses: actions/download-artifact@v4
+      - uses: android-actions/setup-android@v3
+      - name: Download Android Frontend Dist
+        uses: actions/download-artifact@v4
         with:
-          name: web-dist
-          path: frontend/dist
-      - name: Install Capacitor dependencies
-        working-directory: app/Android
-        run: npm install
-      - name: Sync Capacitor
-        working-directory: app/Android
-        run: npx cap sync android
+          name: android-frontend-dist
+          path: app/Android/frontend/dist/
+      - name: Setup Capacitor
+        run: |
+          cd app/Android
+          npm install
+          npx cap sync android
       - name: Build APK
-        working-directory: app/Android/android
-        run: ./gradlew assembleDebug
+        run: |
+          cd app/Android/android
+          ./gradlew assembleRelease
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: android-apk
-          path: app/Android/android/app/build/outputs/apk/debug/*.apk
+          path: app/Android/android/app/build/outputs/apk/release/*.apk
 
-  # Job 3: Build Desktop apps (matrix)
   build-desktop:
+    needs: build-desktop-frontend
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
     runs-on: ${{ matrix.os }}
-    needs: build-web
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
-      - uses: actions/download-artifact@v4
+      - name: Download Desktop Frontend Dist
+        uses: actions/download-artifact@v4
         with:
-          name: web-dist
-          path: frontend/dist
-      - name: Install Electron dependencies
-        working-directory: app/Desktop
-        run: npm install
-      - name: Build desktop app
-        working-directory: app/Desktop
-        run: npx electron-builder --publish never
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: Upload artifacts
+          name: desktop-frontend-dist
+          path: app/Desktop/frontend/dist/
+      - name: Install Desktop Dependencies
+        run: |
+          cd app/Desktop
+          npm install
+      - name: Build Desktop App
+        run: |
+          cd app/Desktop
+          if [ "$RUNNER_OS" = "Windows" ]; then
+            npm run build:win
+          elif [ "$RUNNER_OS" = "macOS" ]; then
+            npm run build:mac
+          else
+            npm run build:linux
+          fi
+        shell: bash
+      - name: Upload Desktop Artifacts
         uses: actions/upload-artifact@v4
         with:
           name: desktop-${{ matrix.os }}
@@ -95,17 +135,17 @@ jobs:
             app/Desktop/dist/*.exe
             app/Desktop/dist/*.dmg
             app/Desktop/dist/*.AppImage
-            app/Desktop/dist/*.snap
+            app/Desktop/dist/*.deb
 
-  # Job 4: Create GitHub Release
   release:
-    runs-on: ubuntu-latest
     needs: [build-web, build-android, build-desktop]
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/download-artifact@v4
+      - name: Download All Artifacts
+        uses: actions/download-artifact@v4
         with:
-          path: artifacts
+          path: artifacts/
       - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
@@ -115,5 +155,3 @@ jobs:
             artifacts/desktop-ubuntu-latest/*
             artifacts/desktop-macos-latest/*
             artifacts/desktop-windows-latest/*
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
